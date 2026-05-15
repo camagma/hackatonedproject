@@ -58,8 +58,8 @@ def rerun_current_scope():
 # DESIGN SYSTEM
 # ═══════════════════════════════════════════════════════════════════════════════
 if "ui_theme" not in st.session_state:
-    qp_theme = st.query_params.get("theme", "light")
-    st.session_state.ui_theme = qp_theme if qp_theme in ("light", "dark") else "light"
+    qp_theme = st.query_params.get("theme", "dark")
+    st.session_state.ui_theme = qp_theme if qp_theme in ("light", "dark") else "dark"
 
 APP_THEME = st.session_state.get("ui_theme", "light")
 IS_DARK = APP_THEME == "dark"
@@ -607,13 +607,13 @@ div[data-baseweb="select"]>div{{
   justify-content:flex-start!important;
 }}
 [data-testid="stSidebar"] .stButton>button:hover{{
-  background:#1F2A3D!important;
+  background:{'#1F2A3D' if IS_DARK else '#F0EDE6'}!important;
   color:var(--text)!important;
 }}
 [data-testid="stSidebar"] .stButton button[kind="primary"],
 [data-testid="stSidebar"] .stButton button[kind="primaryFormSubmit"]{{
-  background:#111827!important;
-  border-color:#243044!important;
+  background:{'#111827' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#243044' if IS_DARK else '#D4D0C8'}!important;
   color:var(--text)!important;
 }}
 [data-testid="stSidebar"] .stButton button[kind="secondary"]{{
@@ -624,8 +624,8 @@ div[data-baseweb="select"]>div{{
   margin:0 14px 12px!important;
   border-radius:16px!important;
   padding:4px!important;
-  background:#1A2435!important;
-  border:1px solid #26344A!important;
+  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
+  border:1px solid {'#26344A' if IS_DARK else '#D4D0C8'}!important;
 }}
 .page-header{{
   padding:0 0 20px!important;
@@ -707,34 +707,34 @@ div[data-baseweb="select"]>div{{
   letter-spacing:.055em!important;
 }}
 .stButton>button{{
-  background:#131B2C!important;
-  border-color:#202A3D!important;
+  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
   color:var(--text)!important;
   border-radius:13px!important;
   min-height:40px!important;
   padding:.52rem .85rem!important;
 }}
 .stButton>button:hover{{
-  background:#1A2435!important;
-  border-color:#2E3B54!important;
+  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
+  border-color:{'#2E3B54' if IS_DARK else '#C6C1B8'}!important;
   transform:none!important;
 }}
 .case-card + div[data-testid="stHorizontalBlock"] .stButton>button,
 .returned-panel-head + div[data-testid="stHorizontalBlock"] .stButton>button{{
   border-radius:13px!important;
-  background:#131B2C!important;
-  border-color:#202A3D!important;
+  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
 }}
 .stTextInput input,.stTextArea textarea,.stNumberInput input,
 div[data-baseweb="select"]>div{{
-  background:#0A1020!important;
-  border-color:#202A3D!important;
+  background:{'#0A1020' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
   border-radius:13px!important;
   color:var(--text)!important;
 }}
 .stTabs [data-baseweb="tab-list"]{{
-  background:#1A2435!important;
-  border:1px solid #26344A!important;
+  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
+  border:1px solid {'#26344A' if IS_DARK else '#D4D0C8'}!important;
   border-radius:18px!important;
   padding:5px!important;
 }}
@@ -743,7 +743,7 @@ div[data-baseweb="select"]>div{{
   border-bottom:none!important;
 }}
 .stTabs [aria-selected="true"]{{
-  background:#111827!important;
+  background:{'#111827' if IS_DARK else '#FFFFFF'}!important;
   color:var(--text)!important;
 }}
 .log-item{{
@@ -751,7 +751,7 @@ div[data-baseweb="select"]>div{{
 }}
 [data-testid="stFormSubmitButton"]>button{{
   background:var(--red)!important;
-  color:#08101F!important;
+  color:{'#08101F' if IS_DARK else '#FFFFFF'}!important;
   border-radius:14px!important;
   min-height:48px!important;
 }}
@@ -831,8 +831,8 @@ div[data-baseweb="select"]>div{{
   padding:12px 18px 14px!important;
 }}
 .dash-action-row + div[data-testid="stHorizontalBlock"] .stButton>button{{
-  background:#131B2C!important;
-  border-color:#202A3D!important;
+  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
   border-radius:14px!important;
   min-height:38px!important;
 }}
