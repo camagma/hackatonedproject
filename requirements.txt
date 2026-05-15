@@ -1,0 +1,9 @@
+streamlit
+groq
+fastapi
+uvicorn[standard]
+pydantic
+requests
+
+# Optional: needed only for `python agent.py --gps`
+gpsd-py3
