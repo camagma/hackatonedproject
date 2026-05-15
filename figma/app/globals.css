@@ -1,0 +1,261 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* RescueAI Light Theme - Warm off-white base, ink-black text, scarlet accent */
+:root {
+  /* Base colors */
+  --background: #F7F5F0;
+  --foreground: #0A0A0A;
+  
+  /* Card surfaces */
+  --card: #FFFFFF;
+  --card-foreground: #0A0A0A;
+  
+  /* Popover */
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
+  
+  /* Primary - Scarlet accent */
+  --primary: #DC2626;
+  --primary-foreground: #FFFFFF;
+  
+  /* Secondary */
+  --secondary: #F0EDE6;
+  --secondary-foreground: #0A0A0A;
+  
+  /* Muted */
+  --muted: #E8E5DE;
+  --muted-foreground: #525252;
+  
+  /* Accent */
+  --accent: #F0EDE6;
+  --accent-foreground: #0A0A0A;
+  
+  /* Destructive */
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  
+  /* Border & Input */
+  --border: #D4D0C8;
+  --input: #E8E5DE;
+  --ring: #DC2626;
+  
+  /* Priority colors */
+  --critical: #DC2626;
+  --critical-dim: rgba(220, 38, 38, 0.1);
+  --high: #EA580C;
+  --high-dim: rgba(234, 88, 12, 0.1);
+  --medium: #CA8A04;
+  --medium-dim: rgba(202, 138, 4, 0.1);
+  --low: #16A34A;
+  --low-dim: rgba(22, 163, 74, 0.1);
+  
+  /* Status colors */
+  --online: #16A34A;
+  --online-dim: rgba(22, 163, 74, 0.15);
+  --offline: #DC2626;
+  --offline-dim: rgba(220, 38, 38, 0.15);
+  --unknown: #6B7280;
+  --unknown-dim: rgba(107, 114, 128, 0.15);
+  
+  /* Info */
+  --info: #2563EB;
+  --info-dim: rgba(37, 99, 235, 0.1);
+  
+  /* Chart colors */
+  --chart-1: #DC2626;
+  --chart-2: #EA580C;
+  --chart-3: #16A34A;
+  --chart-4: #2563EB;
+  --chart-5: #6B7280;
+  
+  --radius: 0.875rem;
+  
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0A0A0A;
+  --sidebar-primary: #DC2626;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F0EDE6;
+  --sidebar-accent-foreground: #0A0A0A;
+  --sidebar-border: #D4D0C8;
+  --sidebar-ring: #DC2626;
+}
+
+/* RescueAI Dark Theme - Deep navy-charcoal, cool light text, electric scarlet */
+.dark {
+  /* Base colors */
+  --background: #0C1220;
+  --foreground: #E8EAF0;
+  
+  /* Card surfaces */
+  --card: #151D2E;
+  --card-foreground: #E8EAF0;
+  
+  /* Popover */
+  --popover: #151D2E;
+  --popover-foreground: #E8EAF0;
+  
+  /* Primary - Electric scarlet */
+  --primary: #FB7185;
+  --primary-foreground: #0C1220;
+  
+  /* Secondary */
+  --secondary: #1E293B;
+  --secondary-foreground: #E8EAF0;
+  
+  /* Muted */
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  
+  /* Accent */
+  --accent: #1E293B;
+  --accent-foreground: #E8EAF0;
+  
+  /* Destructive */
+  --destructive: #FB7185;
+  --destructive-foreground: #0C1220;
+  
+  /* Border & Input */
+  --border: #2D3A4F;
+  --input: #1E293B;
+  --ring: #FB7185;
+  
+  /* Priority colors - Adjusted for dark theme */
+  --critical: #FB7185;
+  --critical-dim: rgba(251, 113, 133, 0.15);
+  --high: #FB923C;
+  --high-dim: rgba(251, 146, 60, 0.15);
+  --medium: #FBBF24;
+  --medium-dim: rgba(251, 191, 36, 0.15);
+  --low: #4ADE80;
+  --low-dim: rgba(74, 222, 128, 0.15);
+  
+  /* Status colors */
+  --online: #4ADE80;
+  --online-dim: rgba(74, 222, 128, 0.15);
+  --offline: #FB7185;
+  --offline-dim: rgba(251, 113, 133, 0.15);
+  --unknown: #94A3B8;
+  --unknown-dim: rgba(148, 163, 184, 0.15);
+  
+  /* Info */
+  --info: #60A5FA;
+  --info-dim: rgba(96, 165, 250, 0.15);
+  
+  /* Chart colors */
+  --chart-1: #FB7185;
+  --chart-2: #FB923C;
+  --chart-3: #4ADE80;
+  --chart-4: #60A5FA;
+  --chart-5: #94A3B8;
+  
+  /* Sidebar */
+  --sidebar: #151D2E;
+  --sidebar-foreground: #E8EAF0;
+  --sidebar-primary: #FB7185;
+  --sidebar-primary-foreground: #0C1220;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #E8EAF0;
+  --sidebar-border: #2D3A4F;
+  --sidebar-ring: #FB7185;
+}
+
+@theme inline {
+  --font-sans: var(--font-syne), 'Syne', system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  
+  /* Custom color tokens */
+  --color-critical: var(--critical);
+  --color-critical-dim: var(--critical-dim);
+  --color-high: var(--high);
+  --color-high-dim: var(--high-dim);
+  --color-medium: var(--medium);
+  --color-medium-dim: var(--medium-dim);
+  --color-low: var(--low);
+  --color-low-dim: var(--low-dim);
+  --color-online: var(--online);
+  --color-online-dim: var(--online-dim);
+  --color-offline: var(--offline);
+  --color-offline-dim: var(--offline-dim);
+  --color-unknown: var(--unknown);
+  --color-unknown-dim: var(--unknown-dim);
+  --color-info: var(--info);
+  --color-info-dim: var(--info-dim);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Leaflet map styles */
+.leaflet-container {
+  background: #0C1220 !important;
+  font-family: var(--font-mono);
+}
+
+.leaflet-control-attribution {
+  display: none !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
