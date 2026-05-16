@@ -1,5 +1,5 @@
 """
-RescueAI — full stack in one file.
+FindFirst — full stack in one file.
 Runs a FastAPI heartbeat server in a background thread alongside Streamlit.
 Volunteers ping /heartbeat from their devices; Streamlit reads the SQLite DB
 to show live online status and inject it into AI assignment prompts.
@@ -22,6 +22,19 @@ try:
 except ImportError:
     HAS_REQUESTS = False
 
+try:
+    from streamlit_geolocation import streamlit_geolocation
+    HAS_STREAMLIT_GEOLOCATION = True
+except ImportError:
+    HAS_STREAMLIT_GEOLOCATION = False
+
+try:
+    import folium
+    from streamlit_folium import st_folium
+    HAS_STREAMLIT_FOLIUM = True
+except ImportError:
+    HAS_STREAMLIT_FOLIUM = False
+
 # ── try to import FastAPI stack (optional — falls back gracefully) ─────────────
 try:
     import uvicorn
@@ -35,7 +48,7 @@ except ImportError:
 
 # ─── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="RescueAI",
+    page_title="FindFirst",
     page_icon="🚨",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -58,8 +71,8 @@ def rerun_current_scope():
 # DESIGN SYSTEM
 # ═══════════════════════════════════════════════════════════════════════════════
 if "ui_theme" not in st.session_state:
-    qp_theme = st.query_params.get("theme", "light")
-    st.session_state.ui_theme = qp_theme if qp_theme in ("light", "dark") else "light"
+    qp_theme = st.query_params.get("theme", "dark")
+    st.session_state.ui_theme = qp_theme if qp_theme in ("light", "dark") else "dark"
 
 APP_THEME = st.session_state.get("ui_theme", "light")
 IS_DARK = APP_THEME == "dark"
@@ -607,13 +620,13 @@ div[data-baseweb="select"]>div{{
   justify-content:flex-start!important;
 }}
 [data-testid="stSidebar"] .stButton>button:hover{{
-  background:#1F2A3D!important;
+  background:{'#1F2A3D' if IS_DARK else '#F0EDE6'}!important;
   color:var(--text)!important;
 }}
 [data-testid="stSidebar"] .stButton button[kind="primary"],
 [data-testid="stSidebar"] .stButton button[kind="primaryFormSubmit"]{{
-  background:#111827!important;
-  border-color:#243044!important;
+  background:{'#111827' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#243044' if IS_DARK else '#D4D0C8'}!important;
   color:var(--text)!important;
 }}
 [data-testid="stSidebar"] .stButton button[kind="secondary"]{{
@@ -624,8 +637,8 @@ div[data-baseweb="select"]>div{{
   margin:0 14px 12px!important;
   border-radius:16px!important;
   padding:4px!important;
-  background:#1A2435!important;
-  border:1px solid #26344A!important;
+  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
+  border:1px solid {'#26344A' if IS_DARK else '#D4D0C8'}!important;
 }}
 .page-header{{
   padding:0 0 20px!important;
@@ -707,34 +720,34 @@ div[data-baseweb="select"]>div{{
   letter-spacing:.055em!important;
 }}
 .stButton>button{{
-  background:#131B2C!important;
-  border-color:#202A3D!important;
+  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
   color:var(--text)!important;
   border-radius:13px!important;
   min-height:40px!important;
   padding:.52rem .85rem!important;
 }}
 .stButton>button:hover{{
-  background:#1A2435!important;
-  border-color:#2E3B54!important;
+  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
+  border-color:{'#2E3B54' if IS_DARK else '#C6C1B8'}!important;
   transform:none!important;
 }}
 .case-card + div[data-testid="stHorizontalBlock"] .stButton>button,
 .returned-panel-head + div[data-testid="stHorizontalBlock"] .stButton>button{{
   border-radius:13px!important;
-  background:#131B2C!important;
-  border-color:#202A3D!important;
+  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
 }}
 .stTextInput input,.stTextArea textarea,.stNumberInput input,
 div[data-baseweb="select"]>div{{
-  background:#0A1020!important;
-  border-color:#202A3D!important;
+  background:{'#0A1020' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
   border-radius:13px!important;
   color:var(--text)!important;
 }}
 .stTabs [data-baseweb="tab-list"]{{
-  background:#1A2435!important;
-  border:1px solid #26344A!important;
+  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
+  border:1px solid {'#26344A' if IS_DARK else '#D4D0C8'}!important;
   border-radius:18px!important;
   padding:5px!important;
 }}
@@ -743,7 +756,7 @@ div[data-baseweb="select"]>div{{
   border-bottom:none!important;
 }}
 .stTabs [aria-selected="true"]{{
-  background:#111827!important;
+  background:{'#111827' if IS_DARK else '#FFFFFF'}!important;
   color:var(--text)!important;
 }}
 .log-item{{
@@ -751,7 +764,7 @@ div[data-baseweb="select"]>div{{
 }}
 [data-testid="stFormSubmitButton"]>button{{
   background:var(--red)!important;
-  color:#08101F!important;
+  color:{'#08101F' if IS_DARK else '#FFFFFF'}!important;
   border-radius:14px!important;
   min-height:48px!important;
 }}
@@ -831,8 +844,8 @@ div[data-baseweb="select"]>div{{
   padding:12px 18px 14px!important;
 }}
 .dash-action-row + div[data-testid="stHorizontalBlock"] .stButton>button{{
-  background:#131B2C!important;
-  border-color:#202A3D!important;
+  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
+  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
   border-radius:14px!important;
   min-height:38px!important;
 }}
@@ -849,6 +862,127 @@ div[data-baseweb="select"]>div{{
 .dash-vol-card .vol-avatar{{
   width:52px!important;
   height:52px!important;
+}}
+
+/* ── Mobile layout hardening ─────────────────────────────────────────────── */
+@media (max-width: 900px){{
+  .main .block-container{{
+    padding:1rem .85rem 2rem!important;
+    max-width:100%!important;
+  }}
+  .page-header{{
+    display:block!important;
+    margin-bottom:18px!important;
+    padding-bottom:14px!important;
+  }}
+  .page-title{{
+    font-size:1.62rem!important;
+    line-height:1.12!important;
+    overflow-wrap:anywhere;
+  }}
+  .page-sub{{
+    font-size:.72rem!important;
+  }}
+  .stats-row{{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+  }}
+  .stat-card{{
+    min-height:96px!important;
+    padding:14px!important;
+  }}
+  .stat-num{{
+    font-size:1.55rem!important;
+  }}
+  .case-card,.dash-case-card,.vol-card,.form-card,.log-item{{
+    border-radius:14px!important;
+    padding:14px!important;
+  }}
+  .missing-photo,.missing-photo-placeholder{{
+    width:64px!important;
+    height:64px!important;
+    border-radius:14px!important;
+  }}
+  .badge{{
+    font-size:.58rem!important;
+    padding:4px 8px!important;
+    max-width:100%;
+    white-space:normal;
+  }}
+  .section-head{{
+    font-size:.86rem!important;
+    gap:8px!important;
+  }}
+  .dash-actions{{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }}
+  .dash-actions-note{{
+    padding-top:0!important;
+  }}
+  [data-testid="stHorizontalBlock"]{{
+    gap:.6rem!important;
+  }}
+  [data-testid="stHorizontalBlock"] > div{{
+    min-width:0!important;
+  }}
+  .stButton>button,
+  [data-testid="stFormSubmitButton"]>button{{
+    min-height:44px!important;
+    white-space:normal!important;
+    padding:.58rem .7rem!important;
+  }}
+  .stTextInput input,.stTextArea textarea,.stNumberInput input,
+  div[data-baseweb="select"]>div{{
+    min-height:44px!important;
+    font-size:.86rem!important;
+  }}
+  iframe{{
+    max-width:100%!important;
+  }}
+}}
+
+@media (max-width: 600px){{
+  .main .block-container{{
+    padding:.75rem .65rem 1.6rem!important;
+  }}
+  .page-title{{
+    font-size:1.38rem!important;
+  }}
+  .stats-row{{
+    grid-template-columns:1fr!important;
+  }}
+  .case-card > div:first-child,
+  .dash-case-card > div:first-child{{
+    gap:10px!important;
+  }}
+  .missing-photo,.missing-photo-placeholder{{
+    width:54px!important;
+    height:54px!important;
+    font-size:1.2rem!important;
+  }}
+  .vol-card{{
+    gap:10px!important;
+  }}
+  .vol-avatar{{
+    width:42px!important;
+    height:42px!important;
+    border-radius:12px!important;
+  }}
+  .dash-action-row + div[data-testid="stHorizontalBlock"]{{
+    margin-top:0!important;
+    padding:0!important;
+  }}
+  .dash-action-row{{
+    margin-bottom:10px!important;
+  }}
+  [data-testid="stFileUploaderDropzone"],
+  [data-testid="stFileUploadDropzone"],
+  section[data-testid="stFileUploadDropzone"]>div{{
+    min-width:0!important;
+  }}
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -1188,9 +1322,14 @@ def db_clear_report_location(draft_id: str):
         conn.execute("DELETE FROM report_draft_locations WHERE draft_id=?", (draft_id,))
 
 def ensure_report_draft_id():
+    qp_draft = st.query_params.get("report_draft")
+    has_query_point = bool(st.query_params.get("report_lat") and st.query_params.get("report_lon"))
     if "report_draft_id" not in st.session_state:
-        qp_draft = st.query_params.get("report_draft")
         st.session_state.report_draft_id = qp_draft or secrets.token_urlsafe(12)
+    elif qp_draft and has_query_point and qp_draft != st.session_state.report_draft_id:
+        # A Leaflet click updates the browser query string first. Treat that
+        # draft id as authoritative so the selected point is not discarded.
+        st.session_state.report_draft_id = qp_draft
     return st.session_state.report_draft_id
 
 def db_save_case(case: dict):
@@ -1266,11 +1405,11 @@ def sync_volunteer_assignments_from_cases():
 # ═══════════════════════════════════════════════════════════════════════════════
 # FASTAPI HEARTBEAT SERVER  (runs in background thread)
 # ═══════════════════════════════════════════════════════════════════════════════
-FASTAPI_PORT = int(os.getenv("RESCUEAI_API_PORT", "8000"))
+FASTAPI_PORT = int(os.getenv("FINDFIRST_API_PORT", "8000"))
 _server_started = False
 
 def _new_fastapi_app():
-    return FastAPI(title="RescueAI Heartbeat", version="1.0")
+    return FastAPI(title="FindFirst Heartbeat", version="1.0")
 
 def _fastapi_port_open(port: int) -> bool:
     try:
@@ -1283,7 +1422,7 @@ def _rescue_api_on_port(port: int) -> bool:
     try:
         with urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=0.4) as resp:
             data = resp.read(300).decode("utf-8", "ignore")
-        return "RescueAI Heartbeat" in data
+        return "FindFirst Heartbeat" in data
     except Exception:
         return False
 
@@ -1337,7 +1476,7 @@ def _start_fastapi_server():
 
     @fapi.get("/")
     def root():
-        return {"service": "RescueAI Heartbeat", "time": datetime.now().isoformat()}
+        return {"service": "FindFirst Heartbeat", "time": datetime.now().isoformat()}
 
     @fapi.post("/heartbeat")
     def heartbeat(p: HBPayload, x_forwarded_for: Optional[str] = Header(None)):
@@ -1650,6 +1789,327 @@ def browser_ping_js(vol_id: str) -> str:
 }})();
 </script>"""
 
+def persist_browser_gps_fix(vol: dict, lat: float, lon: float, accuracy: float | None = None, marker: str | None = None) -> dict | None:
+    if not vol:
+        return None
+    try:
+        lat = float(lat)
+        lon = float(lon)
+    except Exception:
+        return None
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        return None
+    marker = marker or f"{vol.get('id')}:{lat:.6f}:{lon:.6f}"
+    if st.session_state.get("_last_browser_gps_fix") == marker:
+        return {"lat": lat, "lon": lon, "accuracy": accuracy}
+
+    address = f"Browser GPS {lat:.5f}, {lon:.5f}"
+    if accuracy is not None:
+        try:
+            address += f" (±{int(float(accuracy))}m)"
+        except Exception:
+            pass
+    now = datetime.now().isoformat()
+    vol["lat"] = lat
+    vol["lon"] = lon
+    vol["address"] = address
+    vol["last_checkin"] = now
+    db_save_vol_gps(vol["id"], lat, lon, address)
+    db_upsert_heartbeat(vol["id"], "browser", HB_DEFAULT_INTERVAL, None, None, lat, lon, "📍 Browser GPS")
+    st.session_state["_last_browser_gps_fix"] = marker
+    return {"lat": lat, "lon": lon, "accuracy": accuracy}
+
+def read_browser_gps_query(vol: dict) -> dict | None:
+    """Persist a browser GPS fix passed back from an embedded Streamlit component."""
+    if not vol:
+        return None
+    if st.query_params.get("gps_vol") != vol.get("id"):
+        return None
+    try:
+        lat = float(st.query_params.get("gps_lat", ""))
+        lon = float(st.query_params.get("gps_lon", ""))
+    except Exception:
+        return None
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        return None
+    try:
+        accuracy = float(st.query_params.get("gps_acc", ""))
+    except Exception:
+        accuracy = None
+    ts = st.query_params.get("gps_ts", "")
+    marker = f"{vol.get('id')}:{lat:.6f}:{lon:.6f}:{ts}"
+    return persist_browser_gps_fix(vol, lat, lon, accuracy, marker)
+
+def read_streamlit_geolocation_fix(vol: dict) -> dict | None:
+    """Use the native Streamlit geolocation component when installed."""
+    if not vol or not HAS_STREAMLIT_GEOLOCATION:
+        return None
+    try:
+        location = streamlit_geolocation()
+    except Exception as exc:
+        st.warning(f"Browser geolocation component failed: {exc}")
+        return None
+    if not location:
+        return None
+    lat = location.get("latitude", location.get("lat"))
+    lon = location.get("longitude", location.get("lon"))
+    accuracy = location.get("accuracy")
+    if lat is None or lon is None:
+        return None
+    try:
+        marker = f"{vol.get('id')}:{float(lat):.6f}:{float(lon):.6f}:{location.get('timestamp','component')}"
+    except Exception:
+        marker = None
+    return persist_browser_gps_fix(vol, lat, lon, accuracy, marker)
+
+def render_my_position_map(vol: dict, latest_gps: dict | None, gps_is_auto: bool, show_case_markers: bool = True):
+    """Show the volunteer's current GPS context on a map."""
+    center_lat = float((latest_gps or {}).get("lat") or vol.get("lat") or 50.45)
+    center_lon = float((latest_gps or {}).get("lon") or vol.get("lon") or 30.52)
+    current_label = "Current GPS position" if gps_is_auto else "Waiting for browser GPS"
+    current_color = "#49e37f" if gps_is_auto else "#94a3b8"
+    tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" if IS_DARK else "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+    case_points = []
+    if show_case_markers:
+        for case in st.session_state.get("cases", []):
+            if case.get("status") in ["found", "closed"]:
+                continue
+            if case.get("lat") is None or case.get("lon") is None:
+                continue
+            label, cls = get_priority(compute_dynamic_risk(case)["effective"])
+            color = {"critical": "#ff5f7d", "high": "#fb923c", "medium": "#facc15", "low": "#49e37f"}.get(cls, "#ff5f7d")
+            case_points.append({
+                "lat": float(case["lat"]),
+                "lon": float(case["lon"]),
+                "name": f"{case.get('id', '')} · {case.get('name', '')}",
+                "label": label,
+                "color": color,
+                "location": case.get("location", "Map pin"),
+                "radius_km": dynamic_search_radius_km(case),
+            })
+    payload = json.dumps(case_points, ensure_ascii=False)
+    volunteer_name = json.dumps(vol.get("name", "Volunteer"), ensure_ascii=False)
+    current_label_js = json.dumps(current_label, ensure_ascii=False)
+    st.markdown('<div style="height:8px"></div>', unsafe_allow_html=True)
+    streamlit.components.v1.html(f"""<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {{ margin:0; background:transparent; }}
+    #mypos-map {{
+      width:100%;
+      height:320px;
+      border-radius:16px;
+      overflow:hidden;
+      background:#0b1020;
+      border:1px solid rgba(148,163,184,.22);
+    }}
+    .leaflet-container {{ background:#0b1020; font-family:Inter,system-ui,sans-serif; }}
+    .map-chip {{
+      position:absolute;
+      z-index:500;
+      left:14px;
+      bottom:14px;
+      background:rgba(12,18,32,.86);
+      border:1px solid rgba(148,163,184,.28);
+      border-radius:999px;
+      padding:8px 12px;
+      color:#e5e7eb;
+      font:700 12px/1.2 Inter,system-ui,sans-serif;
+      backdrop-filter:blur(10px);
+    }}
+  </style>
+</head>
+<body>
+  <div id="mypos-map"><div class="map-chip">{'GPS locked' if gps_is_auto else 'Request location access above'}</div></div>
+  <script>
+    const center = [{center_lat:.6f}, {center_lon:.6f}];
+    const cases = {payload};
+    const map = L.map("mypos-map", {{ center, zoom: 13, preferCanvas: true }});
+    L.tileLayer("{tile_url}", {{
+      attribution: "&copy; OpenStreetMap &copy; CARTO",
+      subdomains: "abcd",
+      maxZoom: 19
+    }}).addTo(map);
+    L.circleMarker(center, {{
+      radius: 12,
+      color: "{current_color}",
+      fillColor: "{current_color}",
+      fillOpacity: .92,
+      weight: 3
+    }}).bindPopup("<b>" + {volunteer_name} + "</b><br>" + {current_label_js}).addTo(map);
+    if ({str(gps_is_auto).lower()}) {{
+      L.circle(center, {{
+        radius: 80,
+        color: "{current_color}",
+        fillColor: "{current_color}",
+        fillOpacity: .08,
+        weight: 1
+      }}).addTo(map);
+    }}
+    cases.forEach(function(c) {{
+      L.circle([c.lat, c.lon], {{
+        radius: Math.max(0, Number(c.radius_km || 0)) * 1000,
+        color: c.color,
+        fillColor: c.color,
+        fillOpacity: .07,
+        weight: 1.5,
+        dashArray: "6 6"
+      }}).bindPopup("<b>" + c.name + "</b><br>Search radius: " + c.radius_km + " km").addTo(map);
+      L.circleMarker([c.lat, c.lon], {{
+        radius: 8,
+        color: c.color,
+        fillColor: c.color,
+        fillOpacity: .25,
+        weight: 2,
+        dashArray: "4"
+      }}).bindPopup("<b>" + c.name + "</b><br>" + c.location + "<br>Risk: " + c.label + "<br>Search radius: " + c.radius_km + " km").addTo(map);
+    }});
+    const bounds = [center].concat(cases.map(c => [c.lat, c.lon]));
+    if (bounds.length > 1) {{
+      map.fitBounds(bounds, {{ padding:[34,34], maxZoom:13 }});
+    }}
+    setTimeout(function() {{ map.invalidateSize(); }}, 250);
+  </script>
+</body>
+</html>""", height=340)
+
+def browser_gps_permission_widget(vol_id: str):
+    """Small browser-side permission flow for volunteer geolocation."""
+    streamlit.components.v1.html(f"""
+<div class="gps-permission">
+  <div class="gps-copy">
+    <div class="gps-title">Location permission required</div>
+    <div class="gps-text">Click the button to open the browser's native location permission dialog.</div>
+  </div>
+  <button id="gps-enable" type="button">Request Location Access</button>
+  <div id="gps-status">Waiting for permission request.</div>
+</div>
+<style>
+  .gps-permission {{
+    font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+    background:#121b2b;
+    border:1px solid rgba(148,163,184,.22);
+    border-radius:16px;
+    padding:16px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    align-items:center;
+    color:#94a3b8;
+  }}
+  .gps-title {{
+    color:#f8fafc;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:.01em;
+  }}
+  .gps-text {{
+    color:#94a3b8;
+    font-size:13px;
+    margin-top:4px;
+    line-height:1.35;
+  }}
+  #gps-enable {{
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;
+    background:#ff6b86;
+    color:#090d18;
+    font-weight:800;
+    padding:12px 18px;
+    cursor:pointer;
+    min-width:220px;
+    box-shadow:0 14px 34px rgba(255,107,134,.24);
+  }}
+  #gps-enable:disabled {{
+    opacity:.75;
+    cursor:default;
+  }}
+  #gps-status {{
+    grid-column:1 / -1;
+    font-size:13px;
+    line-height:1.35;
+    color:#94a3b8;
+    background:rgba(2,6,23,.38);
+    border:1px solid rgba(148,163,184,.14);
+    border-radius:10px;
+    padding:10px 12px;
+  }}
+  @media(max-width:640px){{
+    .gps-permission {{ grid-template-columns:1fr; }}
+    #gps-enable {{ width:100%; }}
+  }}
+</style>
+<script>
+(function(){{
+  const btn = document.getElementById("gps-enable");
+  const status = document.getElementById("gps-status");
+  function setStatus(html, color){{
+    status.innerHTML = html;
+    if(color) status.style.color = color;
+  }}
+  async function readPermissionState(){{
+    if (!navigator.permissions || !navigator.permissions.query) return;
+    try {{
+      const result = await navigator.permissions.query({{name:"geolocation"}});
+      if (result.state === "denied") {{
+        setStatus("Location is blocked for this site. Open site settings in the address bar and set Location to Allow, then reload.", "#ff6b86");
+      }} else if (result.state === "granted") {{
+        setStatus("Location is already allowed. Click the button to refresh your GPS fix.", "#49e37f");
+      }} else {{
+        setStatus("Location permission is not decided yet. Click the button to show the native browser prompt.", "#94a3b8");
+      }}
+      result.onchange = readPermissionState;
+    }} catch(e) {{}}
+  }}
+  function sendFix(pos){{
+    const lat = pos.coords.latitude.toFixed(6);
+    const lon = pos.coords.longitude.toFixed(6);
+    const acc = Math.round(pos.coords.accuracy || 0);
+    setStatus("<b style='color:#49e37f'>GPS saved:</b> " + lat + ", " + lon + " (±" + acc + "m)", "#94a3b8");
+    btn.textContent = "GPS Active";
+    btn.disabled = false;
+    const params = new URLSearchParams(window.parent.location.search);
+    params.set("page", "tracking");
+    params.set("gps_vol", "{vol_id}");
+    params.set("gps_lat", lat);
+    params.set("gps_lon", lon);
+    params.set("gps_acc", String(acc));
+    params.set("gps_ts", String(Date.now()));
+    window.parent.location.href = window.parent.location.pathname + "?" + params.toString();
+  }}
+  function fail(err){{
+    btn.disabled = false;
+    btn.textContent = "Retry Location Access";
+    const message = err && err.message ? err.message : "permission denied or timed out";
+    if (err && err.code === 1) {{
+      setStatus("Location permission was denied. Use the browser address bar site settings to allow Location, then retry.", "#ff6b86");
+    }} else {{
+      setStatus("Location unavailable: " + message, "#ffb84d");
+    }}
+  }}
+  btn.addEventListener("click", function(){{
+    if (!navigator.geolocation) {{
+      setStatus("This browser does not support geolocation.", "#ff6b86");
+      return;
+    }}
+    btn.disabled = true;
+    btn.textContent = "Requesting...";
+    setStatus("Requesting native browser location permission...", "#94a3b8");
+    navigator.geolocation.getCurrentPosition(sendFix, fail, {{
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 15000
+    }});
+  }});
+  readPermissionState();
+}})();
+</script>
+""", height=150)
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # GROQ CLIENT
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1807,6 +2267,30 @@ def get_priority(score):
 
 def clamp_score(value, low=0, high=100):
     return max(low, min(high, int(round(value))))
+
+def case_missing_hours_now(case: dict) -> float:
+    """Total missing time, including elapsed time since the report was created."""
+    try:
+        base_hours = float(case.get("time_missing") or 0)
+    except Exception:
+        base_hours = 0.0
+    created_at = case.get("created_at")
+    if created_at:
+        try:
+            elapsed = (datetime.now() - datetime.fromisoformat(created_at)).total_seconds() / 3600
+            base_hours += max(0.0, elapsed)
+        except Exception:
+            pass
+    return max(0.0, base_hours)
+
+def dynamic_search_radius_km(case: dict) -> float:
+    """Search area grows by 5 km for every 30 minutes the person is missing."""
+    try:
+        base_radius = float(case.get("search_radius_base_km") or case.get("search_radius_km") or 1.0)
+    except Exception:
+        base_radius = 1.0
+    growth_steps = math.floor(case_missing_hours_now(case) * 2)
+    return round(base_radius + growth_steps * 5.0, 1)
 
 # ─── Weather & Time Risk ──────────────────────────────────────────────────────
 WEATHER_MODIFIERS = {
@@ -2118,6 +2602,7 @@ def rescore_legacy_cases():
             "risk_factors": assessed.get("risk_factors", []),
             "recommended_action": assessed.get("recommended_action", ""),
             "search_radius_km": assessed.get("estimated_search_radius_km", 2),
+            "search_radius_base_km": assessed.get("estimated_search_radius_km", 2),
             "risk_breakdown": assessed.get("risk_breakdown", {}),
         })
         db_save_case(case)
@@ -2487,6 +2972,38 @@ def geocode_address(address: str, default=DEFAULT_CENTER):
 
 def get_report_map_selection():
     draft_id = ensure_report_draft_id()
+    qp_draft = st.query_params.get("report_draft")
+    try:
+        lat = float(st.query_params.get("report_lat", ""))
+        lon = float(st.query_params.get("report_lon", ""))
+        if -90 <= lat <= 90 and -180 <= lon <= 180:
+            if qp_draft and qp_draft != draft_id:
+                draft_id = qp_draft
+                st.session_state.report_draft_id = qp_draft
+            st.session_state.report_map_point = (lat, lon)
+            st.session_state.report_selected_lat = lat
+            st.session_state.report_selected_lon = lon
+            st.session_state.report_lat = lat
+            st.session_state.report_lon = lon
+            if draft_id:
+                db_save_report_location(draft_id, lat, lon)
+            return lat, lon
+    except Exception:
+        pass
+    map_state = st.session_state.get(f"report_location_map_{draft_id}") if draft_id else None
+    clicked = (map_state or {}).get("last_clicked") if isinstance(map_state, dict) else None
+    if clicked and clicked.get("lat") is not None and clicked.get("lng") is not None:
+        try:
+            lat = float(clicked["lat"])
+            lon = float(clicked["lng"])
+            if -90 <= lat <= 90 and -180 <= lon <= 180:
+                st.session_state.report_map_point = (lat, lon)
+                st.session_state.report_selected_lat = lat
+                st.session_state.report_selected_lon = lon
+                db_save_report_location(draft_id, lat, lon)
+                return lat, lon
+        except Exception:
+            pass
     if draft_id:
         loc = db_get_report_location(draft_id)
         if loc:
@@ -2494,19 +3011,24 @@ def get_report_map_selection():
             if -90 <= lat <= 90 and -180 <= lon <= 180:
                 st.session_state.report_map_point = (lat, lon)
                 return lat, lon
-    try:
-        lat = float(st.query_params.get("report_lat", ""))
-        lon = float(st.query_params.get("report_lon", ""))
-        if -90 <= lat <= 90 and -180 <= lon <= 180:
-            st.session_state.report_map_point = (lat, lon)
-            return lat, lon
-    except Exception:
-        pass
+    for key in ("report_selected_lat", "report_lat"):
+        paired_key = "report_selected_lon" if key == "report_selected_lat" else "report_lon"
+        if key in st.session_state and paired_key in st.session_state:
+            try:
+                lat = float(st.session_state[key])
+                lon = float(st.session_state[paired_key])
+                if -90 <= lat <= 90 and -180 <= lon <= 180:
+                    st.session_state.report_map_point = (lat, lon)
+                    return lat, lon
+            except Exception:
+                pass
     saved = st.session_state.get("report_map_point")
     if saved:
         try:
             lat, lon = float(saved[0]), float(saved[1])
             if -90 <= lat <= 90 and -180 <= lon <= 180:
+                st.session_state.report_selected_lat = lat
+                st.session_state.report_selected_lon = lon
                 return lat, lon
         except Exception:
             st.session_state.pop("report_map_point", None)
@@ -2514,8 +3036,12 @@ def get_report_map_selection():
 
 def clear_report_map_selection():
     st.session_state.pop("report_map_point", None)
+    st.session_state.pop("report_selected_lat", None)
+    st.session_state.pop("report_selected_lon", None)
+    st.session_state.pop("report_lat", None)
+    st.session_state.pop("report_lon", None)
     db_clear_report_location(st.session_state.get("report_draft_id"))
-    keep_params = {k: v for k, v in st.query_params.items() if k not in {"report_lat", "report_lon"}}
+    keep_params = {k: v for k, v in st.query_params.items() if k not in {"report_lat", "report_lon", "report_draft"}}
     st.query_params.clear()
     for k, v in keep_params.items():
         st.query_params[k] = v
@@ -2524,6 +3050,51 @@ def render_report_location_picker():
     draft_id = ensure_report_draft_id()
     selected = get_report_map_selection()
     center_lat, center_lon = selected or DEFAULT_CENTER
+    st.markdown(
+        '<div class="address-hint">Click the last known point on the map. The selected coordinates are saved before the report is submitted.</div>',
+        unsafe_allow_html=True,
+    )
+    if HAS_STREAMLIT_FOLIUM:
+        fmap = folium.Map(
+            location=[center_lat, center_lon],
+            zoom_start=13 if selected else 11,
+            tiles=None,
+            control_scale=True,
+        )
+        folium.TileLayer(
+            "OpenStreetMap",
+            name="OpenStreetMap",
+            control=False,
+        ).add_to(fmap)
+        if selected:
+            folium.Marker(
+                [selected[0], selected[1]],
+                tooltip="Selected last known point",
+                icon=folium.Icon(color="blue", icon="info-sign"),
+            ).add_to(fmap)
+        map_state = st_folium(
+            fmap,
+            key=f"report_location_map_{draft_id}",
+            height=360,
+            use_container_width=True,
+            returned_objects=["last_clicked"],
+        )
+        clicked = (map_state or {}).get("last_clicked") if isinstance(map_state, dict) else None
+        if clicked and clicked.get("lat") is not None and clicked.get("lng") is not None:
+            try:
+                lat = float(clicked["lat"])
+                lon = float(clicked["lng"])
+                if -90 <= lat <= 90 and -180 <= lon <= 180:
+                    st.session_state.report_map_point = (lat, lon)
+                    st.session_state.report_selected_lat = lat
+                    st.session_state.report_selected_lon = lon
+                    st.session_state.report_lat = lat
+                    st.session_state.report_lon = lon
+                    db_save_report_location(draft_id, lat, lon)
+            except Exception:
+                pass
+        return
+
     marker_js = ""
     if selected:
         marker_js = f"setMarker({selected[0]:.6f}, {selected[1]:.6f}, false);"
@@ -2551,20 +3122,19 @@ function setMarker(lat,lon,save){{
   }});
   if(save) persist(lat,lon);
 }}
-async function persist(lat,lon){{
-  try{{
-    await fetch('http://localhost:{FASTAPI_PORT}/report-location',{{
-      method:'POST',
-      headers:{{'Content-Type':'application/json'}},
-      body:JSON.stringify({{draft_id:'{draft_id}',lat:lat,lon:lon}})
-    }});
-  }}catch(e){{ console.warn('report-location save failed', e); }}
+function persist(lat,lon){{
   const params=new URLSearchParams(window.parent.location.search);
   params.set('report_lat',lat.toFixed(6));
   params.set('report_lon',lon.toFixed(6));
   params.set('report_draft','{draft_id}');
   params.set('page','report_case');
-  window.parent.location.search=params.toString();
+  const next=params.toString();
+  const current=window.parent.location.search.replace(/^\\?/,'');
+  if(current!==next){{
+    document.getElementById('coords').textContent=lat.toFixed(6)+', '+lon.toFixed(6)+' · saving...';
+    const target=window.parent.location.pathname+'?'+next+window.parent.location.hash;
+    window.parent.location.href=target;
+  }}
 }}
 map.on('click',function(e){{setMarker(e.latlng.lat,e.latlng.lng,true);}});
 {marker_js}
@@ -2793,7 +3363,7 @@ def show_login():
     with col:
         st.markdown("""<div style="text-align:center;padding:40px 0 28px">
           <div style="font-family:var(--font-head);font-size:2rem;font-weight:800;letter-spacing:-.5px;">
-            Rescue<span style="color:var(--red-strong)">AI</span></div>
+            Find<span style="color:var(--red-strong)">First</span></div>
           <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">
             Emergency Coordination Platform</div></div>""",unsafe_allow_html=True)
         tab_in,tab_up=st.tabs(["Sign In","Create Account"])
@@ -2886,7 +3456,7 @@ def show_login():
 def show_sidebar():
     u=st.session_state.current_user; role=u["role"]
     with st.sidebar:
-        st.markdown('<div class="sidebar-logo"><div class="sidebar-logo-badge">R</div><div><div class="sidebar-logo-text">Rescue<span>AI</span></div><div class="sidebar-logo-sub">Operations Center</div></div></div>',unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-logo"><div class="sidebar-logo-badge">F</div><div><div class="sidebar-logo-text">Find<span>First</span></div><div class="sidebar-logo-sub">Operations Center</div></div></div>',unsafe_allow_html=True)
         st.markdown('<div class="side-section-label" style="margin-top:14px">Appearance</div>', unsafe_allow_html=True)
         cur_theme = st.session_state.get("ui_theme", "light")
         st.markdown('<div class="theme-toggle-wrap">', unsafe_allow_html=True)
@@ -3060,6 +3630,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
     risk_html=f'<span style="font-size:.67rem;color:{risk_color};font-family:var(--font-mono)">{dr["w_icon"]} {dr["total"]:+d} pts</span>' if dr["total"]!=0 else ""
     spec=DISASTER_TEAMS.get(case.get("category","Other"),DISASTER_TEAMS["Other"])
     team_tag=f'<span style="font-size:.66rem;color:var(--text3)">{spec["icon"]} {spec["note"]}</span>'
+    radius_km = dynamic_search_radius_km(case)
     photo=case.get("photo_data_url")
     photo_html=(
         f'<img class="missing-photo" src="{photo}" alt="Missing person photo">'
@@ -3073,7 +3644,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
             <div style="min-width:0">
               <div style="font-family:var(--font-head);font-weight:700;font-size:1.05rem">{case['name']}, {case['age']} yrs</div>
               <div style="font-size:.78rem;color:var(--text2);display:flex;gap:14px;flex-wrap:wrap;margin-top:4px">
-                <span>📍 {case['location']}</span><span>🕐 {ts}</span><span>⚠️ {case['category']}</span><span>{weather_text}</span><span>{team_tag}</span></div>
+                <span>📍 {case['location']}</span><span>🕐 {ts}</span><span>⭕ {radius_km} km radius</span><span>⚠️ {case['category']}</span><span>{weather_text}</span><span>{team_tag}</span></div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0">
               <span class="badge badge-{eff_cls}">● {eff_label} · {eff_score}</span>
@@ -3150,7 +3721,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
                 if case.get('required_skills'): st.markdown(f"**Skills:** {', '.join(case['required_skills'])}")
             with c2:
                 if case.get('recommended_action'): st.markdown(f"**Action:** {case['recommended_action']}")
-                if case.get('search_radius_km'): st.markdown(f"**Radius:** {case['search_radius_km']} km")
+                st.markdown(f"**Search radius:** {dynamic_search_radius_km(case)} km")
             team_ids=case.get("team_ids",[])
             if team_ids:
                 st.markdown(f"**Assigned Team {spec['icon']}:**")
@@ -3186,6 +3757,7 @@ def render_dashboard_case_card(case):
         vol = next((v for v in st.session_state.volunteers if v["id"] == case["assigned_to"]), None)
         assigned_name = vol["name"] if vol else "Assigned"
     risk_delta = f'<span style="color:var(--orange);font-family:var(--font-mono);font-size:.72rem;font-weight:800">{dr["total"]:+d}</span>' if dr["total"] else ""
+    radius_km = dynamic_search_radius_km(case)
     st.markdown(f"""<div class="dash-case-card {eff_cls}">
       <div style="display:flex;gap:18px;align-items:flex-start">
         {photo_html}
@@ -3196,6 +3768,7 @@ def render_dashboard_case_card(case):
               <div class="dash-case-meta">
                 <span>📍 {case['location']}</span>
                 <span>🕐 {ts}</span>
+                <span>⭕ {radius_km} km radius</span>
                 <span>🏷️ {case['category']}</span>
               </div>
             </div>
@@ -3701,6 +4274,7 @@ def page_tracking():
     sync_online_status()
     u=st.session_state.current_user
     my_vol=next((v for v in st.session_state.volunteers if v.get("username")==u["username"]),None)
+    gps_fix = read_browser_gps_query(my_vol) if my_vol else None
     if my_vol and HAS_FASTAPI:
         streamlit.components.v1.html(browser_ping_js(my_vol["id"]),height=0)
 
@@ -3710,103 +4284,61 @@ def page_tracking():
     # ── Check-in form ─────────────────────────────────────────────────────────
     if my_vol:
         st.markdown('<div class="section-head">📍 My Position</div>',unsafe_allow_html=True)
-        pos1, pos2 = st.columns([3, 1])
-        with pos1:
-            gps_address = st.text_input(
-                "Current address / fallback location",
-                value=my_vol.get("address", ""),
-                placeholder="e.g. North riverbank, km 4",
-                key="gps_position_address"
-            )
-        with pos2:
-            st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
-            save_pos = st.button("💾 Save Position", key="save_gps_position", use_container_width=True)
-        if save_pos:
-            lat, lon = geocode_address(gps_address or my_vol.get("address", ""))
-            my_vol["address"] = gps_address or my_vol.get("address", "")
-            my_vol["lat"] = lat
-            my_vol["lon"] = lon
-            db_save_vol_gps(my_vol["id"], lat, lon, my_vol["address"])
-            db_upsert_heartbeat(my_vol["id"], "manual", HB_DEFAULT_INTERVAL, None, None, lat, lon, "📍 Position updated")
-            st.success("Position saved and sent to HQ.")
-            st.rerun()
+        st.markdown("""<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:10px">
+          <div style="font-weight:800;color:var(--text);font-size:.86rem">Browser Location Access</div>
+          <div style="font-size:.74rem;color:var(--text3);margin-top:4px">Click the request button below. The browser will show its native location permission dialog when the app is opened on HTTPS or localhost. If access was blocked earlier, reset Location permission from the address bar.</div>
+        </div>""", unsafe_allow_html=True)
+        browser_gps_permission_widget(my_vol["id"])
+
+        latest_gps = db_get_vol_gps(my_vol["id"])
+        hb_source = db_get_all_statuses().get(my_vol["id"], {}).get("hb_source")
+        gps_address = (latest_gps or {}).get("address", "")
+        gps_is_auto = bool(latest_gps and (gps_address.startswith("Browser GPS") or hb_source in ["browser", "agent"]))
+        if latest_gps:
+            my_vol["lat"] = latest_gps["lat"]
+            my_vol["lon"] = latest_gps["lon"]
+            my_vol["address"] = latest_gps.get("address") or my_vol.get("address", "")
+        status_text = "No browser GPS fix yet. Click Request Location Access and allow Location in the browser prompt."
+        if latest_gps and gps_is_auto:
+            ts = (latest_gps.get("updated_at") or "")[:19].replace("T", " ")
+            acc_text = f" · accuracy ±{int(gps_fix['accuracy'])}m" if gps_fix and gps_fix.get("accuracy") is not None else ""
+            status_text = f"Last GPS: {latest_gps['lat']:.5f}, {latest_gps['lon']:.5f}{acc_text} · {ts}"
+        elif latest_gps:
+            status_text = "Stored manual or legacy position is ignored. Check-in requires browser GPS."
+        st.markdown(f"""<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px">
+          <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--text2)">📍 {status_text}</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:6px">Manual location entry is disabled. Check-ins use browser geolocation only.</div>
+        </div>""", unsafe_allow_html=True)
+        render_my_position_map(my_vol, latest_gps, gps_is_auto, show_case_markers=False)
 
         st.markdown('<div class="section-head">📍 Submit Check-In</div>',unsafe_allow_html=True)
-
-        # GPS auto-fill widget — writes coords into hidden inputs via postMessage
-        gps_widget_id = f"gps_{my_vol['id']}"
-        streamlit.components.v1.html(f"""
-<div id="gps-bar" style="font-family:monospace;font-size:.78rem;background:var(--card,#fff);
-  border:1px solid #ddd;border-radius:10px;padding:10px 14px;margin-bottom:8px;
-  display:flex;align-items:center;gap:12px">
-  <button id="gps-btn" onclick="startGPS()" style="background:#2563eb;color:#fff;
-    border:none;border-radius:8px;padding:7px 16px;font-size:.8rem;font-weight:700;cursor:pointer">
-    📍 Get my GPS location
-  </button>
-  <span id="gps-status" style="color:#64748b">Click to request location from browser</span>
-</div>
-<script>
-function startGPS(){{
-  var btn=document.getElementById('gps-btn');
-  var status=document.getElementById('gps-status');
-  btn.disabled=true; btn.textContent='⏳ Locating...'; status.textContent='Requesting GPS…';
-  if(!navigator.geolocation){{ status.textContent='GPS not supported in this browser.'; btn.disabled=false; return; }}
-  navigator.geolocation.getCurrentPosition(
-    function(pos){{
-      var lat=pos.coords.latitude.toFixed(6);
-      var lon=pos.coords.longitude.toFixed(6);
-      var acc=Math.round(pos.coords.accuracy);
-      btn.textContent='✅ GPS acquired'; btn.style.background='#16a34a';
-      status.innerHTML='<b style="color:#16a34a">📍 '+lat+', '+lon+'</b> (±'+acc+'m accuracy)';
-      // Send to Streamlit via postMessage
-      window.parent.postMessage({{type:'gps_fix',lat:parseFloat(lat),lon:parseFloat(lon),acc:acc}},'*');
-    }},
-    function(err){{
-      btn.disabled=false; btn.textContent='📍 Retry GPS';
-      status.textContent='GPS error: '+err.message;
-    }},
-    {{enableHighAccuracy:true,timeout:15000,maximumAge:0}}
-  );
-}}
-// Listen for GPS fix and store in sessionStorage for Streamlit
-window.addEventListener('message',function(e){{
-  if(e.data && e.data.type==='gps_fix'){{
-    sessionStorage.setItem('last_gps_lat',e.data.lat);
-    sessionStorage.setItem('last_gps_lon',e.data.lon);
-  }}
-}});
-</script>""", height=70)
 
         with st.form("checkin_form"):
             ci1,ci2=st.columns(2)
             with ci1:
-                ci_address=st.text_input("Current address / area *", value=my_vol.get("address", ""), placeholder="e.g. North riverbank, km 4")
-                st.markdown('<div class="address-hint">📍 Use GPS button above for precise location, or type an address/landmark.</div>', unsafe_allow_html=True)
                 ci_status=st.selectbox("Field Status",["🟢 All clear — on patrol","🔍 Actively searching",
                     "🚨 Need backup","⚠️ Lost contact with team","🏥 Medical situation",
                     "✅ Target located","🔋 Low battery / heading back"])
-                ci_gps_lat=st.text_input("GPS Lat (auto-filled)", value="", placeholder="auto from GPS button above", key="ci_gps_lat")
-                ci_gps_lon=st.text_input("GPS Lon (auto-filled)", value="", placeholder="auto from GPS button above", key="ci_gps_lon")
             with ci2:
-                ci_area=st.text_input("Current Area / Landmark",placeholder="e.g. North riverbank, km 4")
                 ci_case=st.selectbox("Related Case (optional)",["—"]+[f"{c['id']} — {c['name']}" for c in st.session_state.cases if c.get("status") not in ["found","closed"]])
                 ci_note=st.text_area("Notes to HQ",placeholder="Anything to report...",height=90)
             sub=st.form_submit_button("📡 Send Check-In",use_container_width=True)
 
         if sub:
             now=datetime.now()
-            # Use GPS coords if provided, else geocode address
-            try:
-                ci_lat=float(ci_gps_lat.strip()) if ci_gps_lat.strip() else None
-                ci_lon=float(ci_gps_lon.strip()) if ci_gps_lon.strip() else None
-            except Exception:
-                ci_lat=ci_lon=None
-            if ci_lat is None or ci_lon is None:
-                ci_lat, ci_lon = geocode_address(ci_address or ci_area or my_vol.get("address", ""))
-            ci_place = (ci_address or ci_area or "Unknown area").strip()
+            latest_gps = db_get_vol_gps(my_vol["id"])
+            hb_source = db_get_all_statuses().get(my_vol["id"], {}).get("hb_source")
+            gps_address = (latest_gps or {}).get("address", "")
+            gps_is_auto = bool(latest_gps and (gps_address.startswith("Browser GPS") or hb_source in ["browser", "agent"]))
+            if not gps_is_auto:
+                st.warning("Request location access first, allow Location in the browser prompt, and wait for a GPS fix.")
+                st.stop()
+            ci_lat=float(latest_gps["lat"])
+            ci_lon=float(latest_gps["lon"])
+            ci_place = latest_gps.get("address") or f"Browser GPS {ci_lat:.5f}, {ci_lon:.5f}"
             ci={"id":f"CI{len(st.session_state.checkins)+1:04d}","vol_id":my_vol["id"],"vol_name":my_vol["name"],
                 "username":u["username"],"address":ci_place,"lat":ci_lat,"lon":ci_lon,"status":ci_status,
-                "area":ci_area or ci_place,"case":ci_case if ci_case!="—" else None,
+                "area":ci_place,"case":ci_case if ci_case!="—" else None,
                 "note":ci_note or "","timestamp":now.isoformat()}
             add_checkin(ci)
             my_vol["address"]=ci_place; my_vol["lat"]=ci_lat; my_vol["lon"]=ci_lon; my_vol["last_checkin"]=now.isoformat()
@@ -3841,7 +4373,9 @@ L.marker([{vol['lat']},{vol['lon']}],{{icon:L.divIcon({{html:'<div style="color:
         if c.get("status") not in ["found","closed"]:
             l,cl=get_priority(c["priority_score"])
             col={"critical":map_red,"high":map_orange,"medium":map_yellow,"low":map_green}.get(cl,map_red)
-            case_markers+=f"""L.circleMarker([{c['lat']},{c['lon']}],{{radius:8,color:'{col}',fillColor:'{col}',fillOpacity:.3,weight:2,dashArray:'4'}}).bindPopup('<b>{c["id"]}: {c["name"]}</b><br>{c["location"]}<br>Priority: {l}').addTo(map);\n"""
+            radius_km = dynamic_search_radius_km(c)
+            case_markers+=f"""L.circle([{c['lat']},{c['lon']}],{{radius:{radius_km * 1000:.1f},color:'{col}',fillColor:'{col}',fillOpacity:.07,weight:1.5,dashArray:'6 6'}}).bindPopup('<b>{c["id"]}: {c["name"]}</b><br>Search radius: {radius_km} km').addTo(map);
+L.circleMarker([{c['lat']},{c['lon']}],{{radius:8,color:'{col}',fillColor:'{col}',fillOpacity:.3,weight:2,dashArray:'4'}}).bindPopup('<b>{c["id"]}: {c["name"]}</b><br>{c["location"]}<br>Priority: {l}<br>Search radius: {radius_km} km').addTo(map);\n"""
 
     map_html=f"""<!DOCTYPE html><html><head>
 <meta charset="utf-8"/>
@@ -3969,6 +4503,17 @@ def page_report_case():
         description=st.text_area("Circumstances *",placeholder="Where last seen, clothing, features...",height=110)
         submitted=st.form_submit_button("🤖 Submit & Run AI Analysis",use_container_width=True)
     selected_for_submit = get_report_map_selection()
+    if not selected_for_submit:
+        lat_state = st.session_state.get("report_selected_lat")
+        lon_state = st.session_state.get("report_selected_lon")
+        try:
+            lat_state = float(lat_state)
+            lon_state = float(lon_state)
+            if -90 <= lat_state <= 90 and -180 <= lon_state <= 180:
+                selected_for_submit = (lat_state, lon_state)
+                st.session_state.report_map_point = selected_for_submit
+        except Exception:
+            selected_for_submit = None
     if submitted and name and description and selected_for_submit:
         cid=f"C{st.session_state.next_case_id:03d}"; st.session_state.next_case_id+=1
         lat, lon = selected_for_submit
@@ -3991,6 +4536,7 @@ def page_report_case():
             "required_skills":ai_result.get("required_skills",[]),"risk_factors":ai_result.get("risk_factors",[]),
             "recommended_action":ai_result.get("recommended_action",""),
             "search_radius_km":ai_result.get("estimated_search_radius_km",2),
+            "search_radius_base_km":ai_result.get("estimated_search_radius_km",2),
             "risk_breakdown":ai_result.get("risk_breakdown",{}),"status":"new"})
         add_ai_log({"time":datetime.now().strftime("%H:%M:%S"),
             "event":f"📊 Case {cid} scored","detail":ai_result["reasoning"],"score":ai_result["priority_score"]})
@@ -4008,6 +4554,14 @@ def page_report_case():
         db_clear_report_location(st.session_state.get("report_draft_id"))
         st.session_state.report_draft_id = secrets.token_urlsafe(12)
         st.session_state.pop("report_map_point", None)
+        st.session_state.pop("report_selected_lat", None)
+        st.session_state.pop("report_selected_lon", None)
+        st.session_state.pop("report_lat", None)
+        st.session_state.pop("report_lon", None)
+        keep_params = {k: v for k, v in st.query_params.items() if k not in {"report_lat", "report_lon", "report_draft"}}
+        st.query_params.clear()
+        for k, v in keep_params.items():
+            st.query_params[k] = v
         refresh_next_case_id()
         prog.progress(100,text="✅ Done!")
         label,cls=get_priority(new_case["priority_score"])

@@ -4,6 +4,8 @@ fastapi
 uvicorn[standard]
 pydantic
 requests
+streamlit-geolocation
+streamlit-folium
 
 # Optional: needed only for `python agent.py --gps`
 gpsd-py3
