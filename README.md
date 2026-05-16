@@ -7,7 +7,7 @@ Emergency coordination app for missing-person reports, volunteer tracking, weath
 1. Open the project folder:
 
 ```bash
-cd /Users/ivanzabila/Downloads/hackatoned
+cd /Users/Downloads/hackatoned
 ```
 
 2. Install dependencies:
