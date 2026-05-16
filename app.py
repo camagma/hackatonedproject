@@ -35,7 +35,7 @@ try:
 except ImportError:
     HAS_STREAMLIT_FOLIUM = False
 
-# ── try to import FastAPI stack (optional — falls back gracefully) ─────────────
+                                                                                 
 try:
     import uvicorn
     from fastapi import FastAPI, Header
@@ -46,7 +46,7 @@ try:
 except ImportError:
     HAS_FASTAPI = False
 
-# ─── Page config ───────────────────────────────────────────────────────────────
+                                                                                 
 st.set_page_config(
     page_title="FindFirst",
     page_icon="🚨",
@@ -60,6 +60,7 @@ if ST_FRAGMENT is None:
         if func is None:
             return lambda f: f
         return func
+CASES_REFRESH_INTERVAL = "5s"
 
 def rerun_current_scope():
     try:
@@ -67,9 +68,9 @@ def rerun_current_scope():
     except Exception:
         st.rerun()
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# DESIGN SYSTEM
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+               
+                                                                                 
 if "ui_theme" not in st.session_state:
     qp_theme = st.query_params.get("theme", "dark")
     st.session_state.ui_theme = qp_theme if qp_theme in ("light", "dark") else "dark"
@@ -81,32 +82,32 @@ st.markdown(f"""
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=Syne:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root{{
-  --bg:{'#0c1220' if IS_DARK else '#f6f8fc'};
-  --bg2:{'#111827' if IS_DARK else '#eef2f9'};
-  --surface:{'#1a2334' if IS_DARK else '#ffffff'};
-  --panel:{'#131c2b' if IS_DARK else '#fafbfd'};
-  --card:{'#182232' if IS_DARK else '#ffffff'};
-  --card-soft:{'#1f2a3d' if IS_DARK else '#f3f6fb'};
-  --input-bg:{'#1a2334' if IS_DARK else '#ffffff'};
-  --border:{'rgba(148,163,184,.14)' if IS_DARK else 'rgba(15,23,42,.06)'};
-  --border2:{'rgba(148,163,184,.22)' if IS_DARK else 'rgba(15,23,42,.10)'};
-  --input-border:{'rgba(148,163,184,.20)' if IS_DARK else 'rgba(15,23,42,.08)'};
-  --focus-ring:{'rgba(96,165,250,.22)' if IS_DARK else 'rgba(59,130,246,.14)'};
-  --text:{'#f1f5f9' if IS_DARK else '#1e293b'};
-  --text2:{'#cbd5e1' if IS_DARK else '#475569'};
-  --text3:{'#94a3b8' if IS_DARK else '#64748b'};
-  --muted:{'#64748b' if IS_DARK else '#94a3b8'};
-  --red:{'#fb7185' if IS_DARK else '#e11d48'};
-  --red-strong:{'#f43f5e' if IS_DARK else '#be123c'};
-  --red-dim:{'rgba(251,113,133,.12)' if IS_DARK else '#fff1f3'};
-  --orange:{'#fb923c' if IS_DARK else '#ea580c'};
-  --orange-dim:{'rgba(251,146,60,.12)' if IS_DARK else '#fff7ed'};
-  --yellow:{'#fbbf24' if IS_DARK else '#ca8a04'};
-  --yellow-dim:{'rgba(251,191,36,.12)' if IS_DARK else '#fefce8'};
-  --green:{'#4ade80' if IS_DARK else '#16a34a'};
-  --green-dim:{'rgba(74,222,128,.12)' if IS_DARK else '#f0fdf4'};
-  --blue:{'#60a5fa' if IS_DARK else '#2563eb'};
-  --blue-dim:{'rgba(96,165,250,.14)' if IS_DARK else '#eff6ff'};
+  --bg:{'#000000' if IS_DARK else '#F6F1E8'};
+  --bg2:{'#000000' if IS_DARK else '#ECE5D8'};
+  --surface:{'#000000' if IS_DARK else '#FFFCF5'};
+  --panel:{'#000000' if IS_DARK else '#F4ECDF'};
+  --card:{'#000000' if IS_DARK else '#FFFCF5'};
+  --card-soft:{'#080808' if IS_DARK else '#EFE6D7'};
+  --input-bg:{'#000000' if IS_DARK else '#FFFCF5'};
+  --border:{'rgba(255,255,255,.11)' if IS_DARK else 'rgba(95,83,65,.12)'};
+  --border2:{'rgba(255,255,255,.18)' if IS_DARK else 'rgba(95,83,65,.20)'};
+  --input-border:{'rgba(255,255,255,.15)' if IS_DARK else 'rgba(95,83,65,.16)'};
+  --focus-ring:{'rgba(110,173,122,.20)' if IS_DARK else 'rgba(78,138,96,.16)'};
+  --text:{'#F2F1EA' if IS_DARK else '#1F211D'};
+  --text2:{'#CDD4C8' if IS_DARK else '#4C5048'};
+  --text3:{'#8F9B8D' if IS_DARK else '#6D7168'};
+  --muted:{'#8F9B8D' if IS_DARK else '#7B776D'};
+  --red:{'#D9825B' if IS_DARK else '#B95F42'};
+  --red-strong:{'#E39166' if IS_DARK else '#9F4D36'};
+  --red-dim:{'rgba(217,130,91,.16)' if IS_DARK else 'rgba(185,95,66,.11)'};
+  --orange:{'#C9863A' if IS_DARK else '#A96835'};
+  --orange-dim:{'rgba(201,134,58,.15)' if IS_DARK else 'rgba(169,104,53,.12)'};
+  --yellow:{'#D6B85A' if IS_DARK else '#A9862B'};
+  --yellow-dim:{'rgba(214,184,90,.15)' if IS_DARK else 'rgba(169,134,43,.12)'};
+  --green:{'#6EAD7A' if IS_DARK else '#4E8A60'};
+  --green-dim:{'rgba(110,173,122,.15)' if IS_DARK else 'rgba(78,138,96,.12)'};
+  --blue:{'#6A95A8' if IS_DARK else '#4E7D93'};
+  --blue-dim:{'rgba(106,149,168,.15)' if IS_DARK else 'rgba(78,125,147,.12)'};
   --shadow:{'0 16px 40px rgba(0,0,0,.28)' if IS_DARK else '0 12px 32px rgba(15,23,42,.06)'};
   --shadow-sm:{'0 8px 20px rgba(0,0,0,.18)' if IS_DARK else '0 4px 14px rgba(15,23,42,.04)'};
   --font-head:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -117,7 +118,7 @@ st.markdown(f"""
 *,*::before,*::after{{box-sizing:border-box;}}
 html,body,.stApp{{font-family:var(--font-body)!important;}}
 .stApp{{
-  background:{'linear-gradient(165deg,#0c1220 0%,#111827 48%,#0f172a 100%)' if IS_DARK else 'radial-gradient(ellipse 80% 50% at 0% -10%,rgba(37,99,235,.07),transparent),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)'};
+  background:{'#000000' if IS_DARK else 'linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)'};
   color:var(--text);
 }}
 #MainMenu,footer{{visibility:hidden;}}.stDeployButton{{display:none;}}
@@ -164,7 +165,7 @@ div[data-baseweb="select"]>div{{
 }}
 .stSelectbox>div>div{{color:var(--text)!important;}}
 
-/* Strip Streamlit/Baseweb dark wrappers around inputs */
+
 .stTextInput>div,.stTextInput>div>div,.stTextArea>div,.stTextArea>div>div,
 .stNumberInput>div,.stNumberInput>div>div{{
   background:transparent!important;border:none!important;box-shadow:none!important;
@@ -174,7 +175,7 @@ div[data-baseweb="select"]>div{{
   background:transparent!important;border:none!important;box-shadow:none!important;
 }}
 
-/* Number input container + stepper column */
+
 [data-testid="stNumberInput"] div[data-baseweb="input"],
 .stNumberInput div[data-baseweb="input"]{{
   background:var(--input-bg)!important;border:1px solid var(--input-border)!important;
@@ -189,7 +190,7 @@ div[data-baseweb="select"]>div{{
   background:var(--card-soft)!important;border-left:1px solid var(--input-border)!important;
 }}
 
-/* Number field +/- buttons */
+
 [data-testid="stNumberInput"] button,
 .stNumberInput button,
 [data-testid="stNumberInput"] [data-baseweb="button"],
@@ -206,7 +207,7 @@ div[data-baseweb="select"]>div{{
   background:transparent!important;box-shadow:none!important;
 }}
 
-/* File uploader dropzone */
+
 [data-testid="stFileUploader"],
 [data-testid="stFileUploaderDropzone"],
 [data-testid="stFileUploadDropzone"],
@@ -279,7 +280,7 @@ label,.stSelectbox label{{color:var(--text3)!important;font-size:.72rem!importan
 .case-card::before{{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}}
 .case-card.critical::before{{background:var(--red);}}.case-card.high::before{{background:var(--orange);}}.case-card.medium::before{{background:var(--yellow);}}.case-card.low::before{{background:var(--green);}}
 .missing-photo{{width:78px;height:78px;border-radius:18px;object-fit:cover;border:1px solid var(--border);background:var(--card-soft);box-shadow:var(--shadow-sm);flex-shrink:0;}}
-.missing-photo-placeholder{{width:78px;height:78px;border-radius:18px;border:1px dashed var(--border2);background:var(--card-soft);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:1.55rem;flex-shrink:0;}}
+.missing-photo-context{{filter:saturate(.82) contrast(.96);}}
 .upload-preview-wrap{{background:var(--card-soft);border:1px solid var(--border);border-radius:16px;padding:10px;margin-top:8px;}}
 
 .badge{{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.55px;}}
@@ -315,26 +316,26 @@ label,.stSelectbox label{{color:var(--text3)!important;font-size:.72rem!importan
 .online-dot{{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0;}}
 .online-dot.online{{background:var(--green);box-shadow:0 0 6px color-mix(in srgb, var(--green) 50%, transparent);}}.online-dot.offline{{background:var(--red);}}.online-dot.unknown{{background:var(--text3);}}
 [data-testid="stFormSubmitButton"]>button{{background:var(--red-strong)!important;color:white!important;width:100%;padding:.7rem!important;font-size:.9rem!important;border:none!important;box-shadow:0 10px 24px rgba(220,38,38,.22)!important;}}
-[data-testid="stFormSubmitButton"]>button:hover{{background:#b91c1c!important;color:white!important;}}
+[data-testid="stFormSubmitButton"]>button:hover{{background:#9F4D36!important;color:white!important;}}
 .live-clock{{font-family:var(--font-mono);font-weight:600;color:var(--text2);}}
 .address-hint{{font-size:.72rem;color:var(--text3);margin-top:4px;}}
 
-/* ── Placeholder text visible in both themes ─────────────────── */
+
 ::placeholder{{color:var(--muted)!important;opacity:1!important;}}
 input::placeholder,textarea::placeholder{{color:var(--muted)!important;opacity:1!important;font-style:italic!important;}}
 
-/* ── Theme toggle buttons in sidebar ───────────────────────────── */
+
 .theme-toggle-wrap + div[data-testid="stHorizontalBlock"],
 .theme-toggle-wrap [data-testid="stHorizontalBlock"]{{
   gap:6px!important;padding:5px!important;background:var(--card-soft)!important;
   border:1px solid var(--border)!important;border-radius:16px!important;margin-bottom:10px!important;
 }}
-/* Wrap the columns row inside a styled pill */
+
 [data-testid="stSidebar"] .theme-toggle-wrap + div [data-testid="stHorizontalBlock"]{{
   background:var(--card-soft)!important;border:1px solid var(--border)!important;
   border-radius:16px!important;padding:5px!important;gap:6px!important;
 }}
-/* Active (primary) theme button */
+
 [data-testid="stSidebar"] .stButton button[kind="primaryFormSubmit"],
 [data-testid="stSidebar"] .stButton button[kind="primary"]{{
   background:var(--card)!important;color:var(--text)!important;border:1px solid var(--border2)!important;
@@ -342,7 +343,7 @@ input::placeholder,textarea::placeholder{{color:var(--muted)!important;opacity:1
   font-size:.84rem!important;font-weight:700!important;border-radius:11px!important;
   padding:9px 10px!important;
 }}
-/* Inactive (secondary) theme button */
+
 [data-testid="stSidebar"] .stButton button[kind="secondary"]{{
   background:transparent!important;color:var(--text3)!important;border:1px solid transparent!important;
   box-shadow:none!important;font-size:.84rem!important;font-weight:600!important;
@@ -352,11 +353,11 @@ input::placeholder,textarea::placeholder{{color:var(--muted)!important;opacity:1
   background:var(--card)!important;color:var(--text2)!important;border-color:var(--border)!important;
 }}
 
-/* ── Light-mode: force white/clean backgrounds on all inputs ─── */
+
 .stTextInput input,.stTextArea textarea,.stNumberInput input{{
   background:var(--input-bg)!important;color:var(--text)!important;
 }}
-/* Selectbox dropdown text and background */
+
 div[data-baseweb="select"] div[class*="ValueContainer"],
 div[data-baseweb="select"] span,
 div[data-baseweb="select"] input{{
@@ -371,7 +372,7 @@ div[data-baseweb="popover"] li:hover{{
   background:var(--card-soft)!important;
 }}
 
-/* Reporter "returned" row — sits flush under case card */
+
 .returned-panel-head{{
   font-size:.82rem;font-weight:700;color:var(--green);margin:4px 0 8px 0;
 }}
@@ -383,7 +384,7 @@ div[data-baseweb="popover"] li:hover{{
   background:var(--input-bg)!important;border-color:var(--input-border)!important;
 }}
 .returned-panel-head + div[data-testid="stHorizontalBlock"] [data-testid="stButton"]>button[kind="primary"]{{
-  background:linear-gradient(135deg,var(--green),#22c55e)!important;color:#fff!important;
+  background:linear-gradient(135deg,var(--green),#5F9B6B)!important;color:#fff!important;
   border:none!important;border-radius:14px!important;min-height:46px!important;margin-top:0!important;
   font-weight:700!important;box-shadow:0 8px 20px rgba(22,163,74,.2)!important;
 }}
@@ -391,41 +392,41 @@ div[data-baseweb="popover"] li:hover{{
   filter:brightness(1.04);transform:translateY(-1px);color:#fff!important;
 }}
 
-/* ── Figma visual polish layer: tokens + surface treatment ───────────────── */
+
 :root{{
-  --bg:{'#0C1220' if IS_DARK else '#F7F5F0'};
-  --bg2:{'#111827' if IS_DARK else '#F0EDE6'};
-  --surface:{'#151D2E' if IS_DARK else '#FFFFFF'};
-  --panel:{'#151D2E' if IS_DARK else '#FFFFFF'};
-  --card:{'#151D2E' if IS_DARK else '#FFFFFF'};
-  --card-soft:{'#1E293B' if IS_DARK else '#F0EDE6'};
-  --input-bg:{'#1E293B' if IS_DARK else '#F7F5F0'};
-  --border:{'#2D3A4F' if IS_DARK else '#D4D0C8'};
-  --border2:{'#3A4962' if IS_DARK else '#C6C1B8'};
-  --input-border:{'#2D3A4F' if IS_DARK else '#D4D0C8'};
-  --focus-ring:{'rgba(251,113,133,.20)' if IS_DARK else 'rgba(220,38,38,.14)'};
-  --text:{'#E8EAF0' if IS_DARK else '#0A0A0A'};
-  --text2:{'#CBD5E1' if IS_DARK else '#343434'};
-  --text3:{'#94A3B8' if IS_DARK else '#525252'};
-  --muted:{'#94A3B8' if IS_DARK else '#6B7280'};
-  --red:{'#FB7185' if IS_DARK else '#DC2626'};
-  --red-strong:{'#FB7185' if IS_DARK else '#DC2626'};
-  --red-dim:{'rgba(251,113,133,.15)' if IS_DARK else 'rgba(220,38,38,.10)'};
-  --orange:{'#FB923C' if IS_DARK else '#EA580C'};
-  --orange-dim:{'rgba(251,146,60,.15)' if IS_DARK else 'rgba(234,88,12,.10)'};
-  --yellow:{'#FBBF24' if IS_DARK else '#CA8A04'};
-  --yellow-dim:{'rgba(251,191,36,.15)' if IS_DARK else 'rgba(202,138,4,.10)'};
-  --green:{'#4ADE80' if IS_DARK else '#16A34A'};
-  --green-dim:{'rgba(74,222,128,.15)' if IS_DARK else 'rgba(22,163,74,.10)'};
-  --blue:{'#60A5FA' if IS_DARK else '#2563EB'};
-  --blue-dim:{'rgba(96,165,250,.15)' if IS_DARK else 'rgba(37,99,235,.10)'};
+  --bg:{'#000000' if IS_DARK else '#F6F1E8'};
+  --bg2:{'#000000' if IS_DARK else '#ECE5D8'};
+  --surface:{'#000000' if IS_DARK else '#FFFCF5'};
+  --panel:{'#000000' if IS_DARK else '#F4ECDF'};
+  --card:{'#000000' if IS_DARK else '#FFFCF5'};
+  --card-soft:{'#080808' if IS_DARK else '#EFE6D7'};
+  --input-bg:{'#000000' if IS_DARK else '#FFFCF5'};
+  --border:{'#1F1F1F' if IS_DARK else '#D5C9B8'};
+  --border2:{'#303030' if IS_DARK else '#BFAF99'};
+  --input-border:{'#262626' if IS_DARK else '#D5C9B8'};
+  --focus-ring:{'rgba(110,173,122,.20)' if IS_DARK else 'rgba(78,138,96,.16)'};
+  --text:{'#F2F1EA' if IS_DARK else '#1F211D'};
+  --text2:{'#CDD4C8' if IS_DARK else '#4C5048'};
+  --text3:{'#8F9B8D' if IS_DARK else '#6D7168'};
+  --muted:{'#8F9B8D' if IS_DARK else '#7B776D'};
+  --red:{'#D9825B' if IS_DARK else '#B95F42'};
+  --red-strong:{'#E39166' if IS_DARK else '#9F4D36'};
+  --red-dim:{'rgba(217,130,91,.16)' if IS_DARK else 'rgba(185,95,66,.11)'};
+  --orange:{'#C9863A' if IS_DARK else '#A96835'};
+  --orange-dim:{'rgba(201,134,58,.15)' if IS_DARK else 'rgba(169,104,53,.12)'};
+  --yellow:{'#D6B85A' if IS_DARK else '#A9862B'};
+  --yellow-dim:{'rgba(214,184,90,.15)' if IS_DARK else 'rgba(169,134,43,.12)'};
+  --green:{'#6EAD7A' if IS_DARK else '#4E8A60'};
+  --green-dim:{'rgba(110,173,122,.15)' if IS_DARK else 'rgba(78,138,96,.12)'};
+  --blue:{'#6A95A8' if IS_DARK else '#4E7D93'};
+  --blue-dim:{'rgba(106,149,168,.15)' if IS_DARK else 'rgba(78,125,147,.12)'};
   --shadow:{'0 18px 44px rgba(0,0,0,.28)' if IS_DARK else '0 18px 44px rgba(10,10,10,.08)'};
   --shadow-sm:{'0 8px 24px rgba(0,0,0,.18)' if IS_DARK else '0 8px 24px rgba(10,10,10,.045)'};
   --font-head:'Syne', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-body:'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }}
 .stApp{{
-  background:{'linear-gradient(180deg,#0C1220 0%,#111827 100%)' if IS_DARK else 'linear-gradient(180deg,#F7F5F0 0%,#F0EDE6 100%)'}!important;
+  background:{'#000000' if IS_DARK else 'linear-gradient(180deg,#F6F1E8 0%,#ECE5D8 100%)'}!important;
 }}
 [data-testid="stSidebar"]{{
   background:var(--panel)!important;
@@ -474,7 +475,7 @@ div[data-baseweb="popover"] li:hover{{
   border-right-color:var(--border2);
   border-bottom-color:var(--border2);
 }}
-.missing-photo,.missing-photo-placeholder{{
+.missing-photo{{
   width:78px;height:78px;border-radius:18px;
 }}
 .badge{{
@@ -544,36 +545,36 @@ div[data-baseweb="select"]>div{{
   background:color-mix(in srgb,var(--red) 88%,#000 12%)!important;
 }}
 
-/* ── Reference screenshot alignment layer ─────────────────────────────────── */
+
 :root{{
-  --bg:{'#080E1B' if IS_DARK else '#F7F5F0'};
-  --bg2:{'#0B1222' if IS_DARK else '#F0EDE6'};
-  --surface:{'#141B2D' if IS_DARK else '#FFFFFF'};
-  --panel:{'#151B2C' if IS_DARK else '#FFFFFF'};
-  --card:{'#171E31' if IS_DARK else '#FFFFFF'};
-  --card-soft:{'#1F2A3D' if IS_DARK else '#F0EDE6'};
-  --input-bg:{'#0A1020' if IS_DARK else '#F7F5F0'};
-  --border:{'#2B354C' if IS_DARK else '#D4D0C8'};
-  --border2:{'#34415B' if IS_DARK else '#C6C1B8'};
-  --text:{'#F4F6FB' if IS_DARK else '#0A0A0A'};
-  --text2:{'#C8D0DD' if IS_DARK else '#343434'};
-  --text3:{'#8F9BAE' if IS_DARK else '#525252'};
-  --red:{'#FF6B86' if IS_DARK else '#DC2626'};
-  --red-strong:{'#FF6B86' if IS_DARK else '#DC2626'};
-  --red-dim:{'rgba(255,107,134,.16)' if IS_DARK else 'rgba(220,38,38,.10)'};
-  --orange:{'#FF9B4B' if IS_DARK else '#EA580C'};
-  --orange-dim:{'rgba(255,155,75,.15)' if IS_DARK else 'rgba(234,88,12,.10)'};
-  --yellow:{'#F7C948' if IS_DARK else '#CA8A04'};
-  --yellow-dim:{'rgba(247,201,72,.15)' if IS_DARK else 'rgba(202,138,4,.10)'};
-  --green:{'#45E083' if IS_DARK else '#16A34A'};
-  --green-dim:{'rgba(69,224,131,.14)' if IS_DARK else 'rgba(22,163,74,.10)'};
-  --blue:{'#75AFFF' if IS_DARK else '#2563EB'};
-  --blue-dim:{'rgba(117,175,255,.14)' if IS_DARK else 'rgba(37,99,235,.10)'};
+  --bg:{'#000000' if IS_DARK else '#F6F1E8'};
+  --bg2:{'#000000' if IS_DARK else '#ECE5D8'};
+  --surface:{'#000000' if IS_DARK else '#FFFCF5'};
+  --panel:{'#000000' if IS_DARK else '#F4ECDF'};
+  --card:{'#000000' if IS_DARK else '#FFFCF5'};
+  --card-soft:{'#080808' if IS_DARK else '#EFE6D7'};
+  --input-bg:{'#000000' if IS_DARK else '#FFFCF5'};
+  --border:{'#1F1F1F' if IS_DARK else '#D5C9B8'};
+  --border2:{'#303030' if IS_DARK else '#BFAF99'};
+  --text:{'#F2F1EA' if IS_DARK else '#1F211D'};
+  --text2:{'#CDD4C8' if IS_DARK else '#4C5048'};
+  --text3:{'#8F9B8D' if IS_DARK else '#6D7168'};
+  --red:{'#D9825B' if IS_DARK else '#B95F42'};
+  --red-strong:{'#E39166' if IS_DARK else '#9F4D36'};
+  --red-dim:{'rgba(217,130,91,.16)' if IS_DARK else 'rgba(185,95,66,.11)'};
+  --orange:{'#C9863A' if IS_DARK else '#A96835'};
+  --orange-dim:{'rgba(201,134,58,.15)' if IS_DARK else 'rgba(169,104,53,.12)'};
+  --yellow:{'#D6B85A' if IS_DARK else '#A9862B'};
+  --yellow-dim:{'rgba(214,184,90,.15)' if IS_DARK else 'rgba(169,134,43,.12)'};
+  --green:{'#6EAD7A' if IS_DARK else '#4E8A60'};
+  --green-dim:{'rgba(110,173,122,.15)' if IS_DARK else 'rgba(78,138,96,.12)'};
+  --blue:{'#6A95A8' if IS_DARK else '#4E7D93'};
+  --blue-dim:{'rgba(106,149,168,.15)' if IS_DARK else 'rgba(78,125,147,.12)'};
   --shadow:{'0 18px 52px rgba(0,0,0,.32)' if IS_DARK else '0 18px 44px rgba(10,10,10,.08)'};
   --shadow-sm:{'0 10px 26px rgba(0,0,0,.20)' if IS_DARK else '0 8px 24px rgba(10,10,10,.045)'};
 }}
 .stApp{{
-  background:{'#080E1B' if IS_DARK else 'linear-gradient(180deg,#F7F5F0 0%,#F0EDE6 100%)'}!important;
+  background:{'#000000' if IS_DARK else 'linear-gradient(180deg,#F6F1E8 0%,#ECE5D8 100%)'}!important;
 }}
 .main .block-container{{
   padding:1.55rem 2rem 2.6rem!important;
@@ -595,7 +596,7 @@ div[data-baseweb="select"]>div{{
   width:34px;height:34px;border-radius:999px;
   display:flex;align-items:center;justify-content:center;
   background:var(--red);
-  color:{'#0A1020' if IS_DARK else '#FFFFFF'};
+  color:{'#000000' if IS_DARK else '#FFFCF5'};
   font-family:var(--font-mono);
   font-weight:900;
   font-size:.78rem;
@@ -620,25 +621,58 @@ div[data-baseweb="select"]>div{{
   justify-content:flex-start!important;
 }}
 [data-testid="stSidebar"] .stButton>button:hover{{
-  background:{'#1F2A3D' if IS_DARK else '#F0EDE6'}!important;
+  background:{'#080808' if IS_DARK else '#EFE6D7'}!important;
   color:var(--text)!important;
 }}
 [data-testid="stSidebar"] .stButton button[kind="primary"],
 [data-testid="stSidebar"] .stButton button[kind="primaryFormSubmit"]{{
-  background:{'#111827' if IS_DARK else '#FFFFFF'}!important;
-  border-color:{'#243044' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#000000' if IS_DARK else '#FFFCF5'}!important;
+  border-color:{'#262626' if IS_DARK else '#D5C9B8'}!important;
   color:var(--text)!important;
 }}
 [data-testid="stSidebar"] .stButton button[kind="secondary"]{{
   color:var(--text3)!important;
+}}
+.sidebar-nav-photo{{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  object-fit:contain;
+  display:block;
+  border:1px solid var(--border);
+  background:var(--card-soft);
+  padding:9px;
+  filter:{'invert(1) brightness(.94)' if IS_DARK else 'none'};
+  box-shadow:0 6px 18px rgba(0,0,0,.18);
+}}
+.sidebar-nav-photo.active{{
+  border-color:var(--red);
+  filter:{'invert(1) brightness(1.02)' if IS_DARK else 'none'};
+  box-shadow:0 0 0 2px var(--red-dim),0 8px 22px rgba(0,0,0,.24);
+}}
+[data-testid="stSidebar"] div[data-testid="column"]:has(.sidebar-nav-photo){{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding-right:3px!important;
+}}
+[data-testid="stSidebar"] div[data-testid="column"]:has(.sidebar-nav-photo) + div[data-testid="column"]{{
+  padding-left:0!important;
+}}
+[data-testid="stSidebar"] div[data-testid="column"]:has(.sidebar-nav-photo) + div[data-testid="column"] .stButton>button{{
+  padding-left:.55rem!important;
+  min-height:42px!important;
+}}
+.sidebar-nav-spacer{{
+  height:3px;
 }}
 .theme-toggle-wrap + div[data-testid="stHorizontalBlock"],
 [data-testid="stSidebar"] .theme-toggle-wrap + div [data-testid="stHorizontalBlock"]{{
   margin:0 14px 12px!important;
   border-radius:16px!important;
   padding:4px!important;
-  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
-  border:1px solid {'#26344A' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#0A0A0A' if IS_DARK else '#EFE6D7'}!important;
+  border:1px solid {'#262626' if IS_DARK else '#D5C9B8'}!important;
 }}
 .page-header{{
   padding:0 0 20px!important;
@@ -692,11 +726,11 @@ div[data-baseweb="select"]>div{{
 .case-card:hover{{
   box-shadow:0 0 0 1px color-mix(in srgb,var(--border2) 55%,transparent), var(--shadow-sm)!important;
 }}
-.missing-photo,.missing-photo-placeholder{{
+.missing-photo{{
   width:88px!important;
   height:88px!important;
   border-radius:18px!important;
-  background:#1E2A3D!important;
+  background:{'#080808' if IS_DARK else '#EFE6D7'}!important;
 }}
 .badge{{
   border-radius:999px!important;
@@ -720,34 +754,34 @@ div[data-baseweb="select"]>div{{
   letter-spacing:.055em!important;
 }}
 .stButton>button{{
-  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
-  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#000000' if IS_DARK else '#FFFCF5'}!important;
+  border-color:{'#262626' if IS_DARK else '#D5C9B8'}!important;
   color:var(--text)!important;
   border-radius:13px!important;
   min-height:40px!important;
   padding:.52rem .85rem!important;
 }}
 .stButton>button:hover{{
-  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
-  border-color:{'#2E3B54' if IS_DARK else '#C6C1B8'}!important;
+  background:{'#080808' if IS_DARK else '#EFE6D7'}!important;
+  border-color:{'#303030' if IS_DARK else '#BFAF99'}!important;
   transform:none!important;
 }}
 .case-card + div[data-testid="stHorizontalBlock"] .stButton>button,
 .returned-panel-head + div[data-testid="stHorizontalBlock"] .stButton>button{{
   border-radius:13px!important;
-  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
-  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#000000' if IS_DARK else '#FFFCF5'}!important;
+  border-color:{'#262626' if IS_DARK else '#D5C9B8'}!important;
 }}
 .stTextInput input,.stTextArea textarea,.stNumberInput input,
 div[data-baseweb="select"]>div{{
-  background:{'#0A1020' if IS_DARK else '#FFFFFF'}!important;
-  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#000000' if IS_DARK else '#FFFCF5'}!important;
+  border-color:{'#262626' if IS_DARK else '#D5C9B8'}!important;
   border-radius:13px!important;
   color:var(--text)!important;
 }}
 .stTabs [data-baseweb="tab-list"]{{
-  background:{'#1A2435' if IS_DARK else '#F0EDE6'}!important;
-  border:1px solid {'#26344A' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#0A0A0A' if IS_DARK else '#EFE6D7'}!important;
+  border:1px solid {'#262626' if IS_DARK else '#D5C9B8'}!important;
   border-radius:18px!important;
   padding:5px!important;
 }}
@@ -756,7 +790,7 @@ div[data-baseweb="select"]>div{{
   border-bottom:none!important;
 }}
 .stTabs [aria-selected="true"]{{
-  background:{'#111827' if IS_DARK else '#FFFFFF'}!important;
+  background:{'#000000' if IS_DARK else '#FFFCF5'}!important;
   color:var(--text)!important;
 }}
 .log-item{{
@@ -764,13 +798,13 @@ div[data-baseweb="select"]>div{{
 }}
 [data-testid="stFormSubmitButton"]>button{{
   background:var(--red)!important;
-  color:{'#08101F' if IS_DARK else '#FFFFFF'}!important;
+  color:{'#000000' if IS_DARK else '#FFFCF5'}!important;
   border-radius:14px!important;
   min-height:48px!important;
 }}
 .dash-risk-card{{
-  background:rgba(255,155,75,.14);
-  border:1px solid rgba(255,155,75,.22);
+  background:rgba(201,134,58,.14);
+  border:1px solid rgba(201,134,58,.24);
   border-radius:18px;
   padding:16px 18px;
   margin:8px 0 22px;
@@ -844,8 +878,8 @@ div[data-baseweb="select"]>div{{
   padding:12px 18px 14px!important;
 }}
 .dash-action-row + div[data-testid="stHorizontalBlock"] .stButton>button{{
-  background:{'#131B2C' if IS_DARK else '#FFFFFF'}!important;
-  border-color:{'#202A3D' if IS_DARK else '#D4D0C8'}!important;
+  background:{'#000000' if IS_DARK else '#FFFCF5'}!important;
+  border-color:{'#262626' if IS_DARK else '#D5C9B8'}!important;
   border-radius:14px!important;
   min-height:38px!important;
 }}
@@ -864,7 +898,7 @@ div[data-baseweb="select"]>div{{
   height:52px!important;
 }}
 
-/* ── Mobile layout hardening ─────────────────────────────────────────────── */
+
 @media (max-width: 900px){{
   .main .block-container{{
     padding:1rem .85rem 2rem!important;
@@ -899,7 +933,7 @@ div[data-baseweb="select"]>div{{
     border-radius:14px!important;
     padding:14px!important;
   }}
-  .missing-photo,.missing-photo-placeholder{{
+  .missing-photo{{
     width:64px!important;
     height:64px!important;
     border-radius:14px!important;
@@ -944,9 +978,104 @@ div[data-baseweb="select"]>div{{
   }}
 }}
 
+@media (max-width: 760px){{
+  .main [data-testid="stHorizontalBlock"]{{
+    flex-wrap:wrap!important;
+  }}
+  .main [data-testid="stHorizontalBlock"] > div{{
+    flex:1 1 100%!important;
+    width:100%!important;
+    min-width:100%!important;
+  }}
+  .dash-case-card > div:first-child,
+  .case-card > div:first-child{{
+    flex-direction:column!important;
+    align-items:stretch!important;
+  }}
+  .dash-case-card [style*="justify-content:space-between"],
+  .case-card [style*="justify-content:space-between"]{{
+    flex-direction:column!important;
+    align-items:flex-start!important;
+  }}
+  .dash-case-meta{{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:6px!important;
+    font-size:.69rem!important;
+    overflow-wrap:anywhere;
+  }}
+  .dash-case-desc{{
+    font-size:.82rem!important;
+    overflow-wrap:anywhere;
+  }}
+  .dash-action-row{{
+    display:none!important;
+  }}
+  .dash-action-row + div[data-testid="stHorizontalBlock"]{{
+    margin-top:8px!important;
+    padding:0!important;
+    gap:8px!important;
+  }}
+  .dash-vol-card{{
+    align-items:flex-start!important;
+    flex-wrap:wrap!important;
+  }}
+  .dash-vol-card > div:last-child{{
+    width:100%!important;
+    align-items:flex-start!important;
+    text-align:left!important;
+  }}
+  .dash-risk-card,
+  .dash-actions-note,
+  .stat-trend,
+  .stat-label{{
+    overflow-wrap:anywhere;
+  }}
+}}
+
 @media (max-width: 600px){{
   .main .block-container{{
     padding:.75rem .65rem 1.6rem!important;
+  }}
+  .login-mobile-scope + div[data-testid="stHorizontalBlock"]{{
+    display:block!important;
+  }}
+  .login-mobile-scope + div[data-testid="stHorizontalBlock"] > div{{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    padding:0!important;
+  }}
+  .login-mobile-scope + div[data-testid="stHorizontalBlock"] > div:first-child,
+  .login-mobile-scope + div[data-testid="stHorizontalBlock"] > div:last-child{{
+    display:none!important;
+  }}
+  .login-hero{{
+    padding:20px 0 18px!important;
+  }}
+  .login-hero-title{{
+    font-size:2.05rem!important;
+    line-height:1!important;
+  }}
+  .login-hero-sub{{
+    font-size:.66rem!important;
+    letter-spacing:1.1px!important;
+  }}
+  .stTabs [data-baseweb="tab-list"]{{
+    width:100%!important;
+    padding:4px!important;
+    border-radius:16px!important;
+  }}
+  .stTabs [data-baseweb="tab"]{{
+    flex:1 1 0!important;
+    min-width:0!important;
+    justify-content:center!important;
+    font-size:.8rem!important;
+    padding:.62rem .45rem!important;
+    white-space:normal!important;
+  }}
+  [data-testid="stForm"]{{
+    padding:0!important;
   }}
   .page-title{{
     font-size:1.38rem!important;
@@ -958,9 +1087,13 @@ div[data-baseweb="select"]>div{{
   .dash-case-card > div:first-child{{
     gap:10px!important;
   }}
-  .missing-photo,.missing-photo-placeholder{{
-    width:54px!important;
-    height:54px!important;
+  .dash-case-card,
+  .case-card{{
+    padding:13px!important;
+  }}
+  .missing-photo{{
+    width:100%!important;
+    height:132px!important;
     font-size:1.2rem!important;
   }}
   .vol-card{{
@@ -987,12 +1120,12 @@ div[data-baseweb="select"]>div{{
 </style>
 """, unsafe_allow_html=True)
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# HEARTBEAT DATABASE  (SQLite, single file next to app.py)
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                                                          
+                                                                                 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rescue_hb.db")
-HB_TIMEOUT_MULT = 2.5       # mark offline after 2.5 × expected interval
-HB_DEFAULT_INTERVAL = 30    # seconds
+HB_TIMEOUT_MULT = 2.5                                                   
+HB_DEFAULT_INTERVAL = 30             
 
 @contextmanager
 def get_db():
@@ -1327,8 +1460,8 @@ def ensure_report_draft_id():
     if "report_draft_id" not in st.session_state:
         st.session_state.report_draft_id = qp_draft or secrets.token_urlsafe(12)
     elif qp_draft and has_query_point and qp_draft != st.session_state.report_draft_id:
-        # A Leaflet click updates the browser query string first. Treat that
-        # draft id as authoritative so the selected point is not discarded.
+                                                                            
+                                                                           
         st.session_state.report_draft_id = qp_draft
     return st.session_state.report_draft_id
 
@@ -1378,10 +1511,14 @@ def sync_cases_from_db():
         st.session_state.cases = []
     refresh_next_case_id()
 
+def refresh_shared_cases():
+    sync_cases_from_db()
+    sync_volunteer_assignments_from_cases()
+
 def sync_volunteer_assignments_from_cases():
     active_assignments = {}
     for case in st.session_state.get("cases", []):
-        if case.get("status") in ["found", "closed"]:
+        if is_case_closed(case):
             continue
         assigned_ids = []
         if case.get("team_ids"):
@@ -1402,9 +1539,9 @@ def sync_volunteer_assignments_from_cases():
             if vol.get("status") == "busy":
                 vol["status"] = "active"
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# FASTAPI HEARTBEAT SERVER  (runs in background thread)
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                                                       
+                                                                                 
 FASTAPI_PORT = int(os.getenv("FINDFIRST_API_PORT", "8000"))
 _server_started = False
 
@@ -1564,13 +1701,13 @@ def _start_fastapi_server():
     t = threading.Thread(target=_run, daemon=True)
     t.start()
 
-# Start server (Streamlit runs this file multiple times; the flag prevents duplicates)
+                                                                                      
 if HAS_FASTAPI:
     _start_fastapi_server()
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# HEARTBEAT HELPERS  (used by Streamlit UI)
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                                           
+                                                                                 
 
 def sync_online_status():
     """Merge DB heartbeat data into st.session_state.volunteers."""
@@ -1594,7 +1731,7 @@ def sync_online_status():
                     vol["lat"], vol["lon"] = gps["lat"], gps["lon"]
                     if gps.get("address"):
                         vol["address"] = gps["address"]
-            # If server says offline → override operational status
+                                                                  
             if rec["online_status"] == "offline" and vol["status"] == "active":
                 vol["status"] = "offline"
         else:
@@ -1729,41 +1866,7 @@ def inject_heartbeat_badge_js():
     """, height=0)
 
 def inject_cases_refresh_js():
-    """Refresh volunteer views when shared server-side cases change."""
-    streamlit.components.v1.html(f"""
-    <script>
-    (function(){{
-      if (window.parent.__rescueCasesRefresh) return;
-      window.parent.__rescueCasesRefresh = true;
-      const API = "http://localhost:{FASTAPI_PORT}/cases";
-      let signature = null;
-      let armed = false;
-      function sig(cases){{
-        return JSON.stringify((cases || []).map(function(c){{
-          return [c.id, c.status, c.assigned_to || "", (c.team_ids || []).join(","), c.updated_at || "", c.found_at || ""];
-        }}));
-      }}
-      async function poll(){{
-        try {{
-          const res = await fetch(API, {{cache:"no-store"}});
-          if (!res.ok) return;
-          const data = await res.json();
-          const next = sig(data.cases || []);
-          if (signature === null) {{
-            signature = next;
-            armed = true;
-            return;
-          }}
-          if (armed && next !== signature) {{
-            window.parent.location.reload();
-          }}
-        }} catch (e) {{}}
-      }}
-      poll();
-      setInterval(poll, 6000);
-    }})();
-    </script>
-    """, height=0)
+    return
 
 def browser_ping_js(vol_id: str) -> str:
     """JS injected into every volunteer page — pings /heartbeat with real GPS coords."""
@@ -1801,7 +1904,13 @@ def persist_browser_gps_fix(vol: dict, lat: float, lon: float, accuracy: float |
         return None
     marker = marker or f"{vol.get('id')}:{lat:.6f}:{lon:.6f}"
     if st.session_state.get("_last_browser_gps_fix") == marker:
-        return {"lat": lat, "lon": lon, "accuracy": accuracy}
+        return {
+            "lat": lat,
+            "lon": lon,
+            "accuracy": accuracy,
+            "address": vol.get("address") or f"Browser GPS {lat:.5f}, {lon:.5f}",
+            "updated_at": vol.get("last_checkin") or datetime.now().isoformat(),
+        }
 
     address = f"Browser GPS {lat:.5f}, {lon:.5f}"
     if accuracy is not None:
@@ -1817,7 +1926,7 @@ def persist_browser_gps_fix(vol: dict, lat: float, lon: float, accuracy: float |
     db_save_vol_gps(vol["id"], lat, lon, address)
     db_upsert_heartbeat(vol["id"], "browser", HB_DEFAULT_INTERVAL, None, None, lat, lon, "📍 Browser GPS")
     st.session_state["_last_browser_gps_fix"] = marker
-    return {"lat": lat, "lon": lon, "accuracy": accuracy}
+    return {"lat": lat, "lon": lon, "accuracy": accuracy, "address": address, "updated_at": now}
 
 def read_browser_gps_query(vol: dict) -> dict | None:
     """Persist a browser GPS fix passed back from an embedded Streamlit component."""
@@ -1866,18 +1975,20 @@ def render_my_position_map(vol: dict, latest_gps: dict | None, gps_is_auto: bool
     """Show the volunteer's current GPS context on a map."""
     center_lat = float((latest_gps or {}).get("lat") or vol.get("lat") or 50.45)
     center_lon = float((latest_gps or {}).get("lon") or vol.get("lon") or 30.52)
+    map_id = f"mypos-map-{vol.get('id', 'vol')}-{center_lat:.5f}-{center_lon:.5f}".replace(".", "-").replace(":", "-")
+    map_id_js = json.dumps(map_id)
     current_label = "Current GPS position" if gps_is_auto else "Waiting for browser GPS"
-    current_color = "#49e37f" if gps_is_auto else "#94a3b8"
+    current_color = "#6EAD7A" if gps_is_auto else "#8F9B8D"
     tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" if IS_DARK else "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
     case_points = []
     if show_case_markers:
         for case in st.session_state.get("cases", []):
-            if case.get("status") in ["found", "closed"]:
+            if is_case_closed(case):
                 continue
             if case.get("lat") is None or case.get("lon") is None:
                 continue
             label, cls = get_priority(compute_dynamic_risk(case)["effective"])
-            color = {"critical": "#ff5f7d", "high": "#fb923c", "medium": "#facc15", "low": "#49e37f"}.get(cls, "#ff5f7d")
+            color = {"critical": "#D9825B", "high": "#C9863A", "medium": "#D6B85A", "low": "#6EAD7A"}.get(cls, "#D9825B")
             case_points.append({
                 "lat": float(case["lat"]),
                 "lon": float(case["lon"]),
@@ -1899,36 +2010,36 @@ def render_my_position_map(vol: dict, latest_gps: dict | None, gps_is_auto: bool
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body {{ margin:0; background:transparent; }}
-    #mypos-map {{
+    #{map_id} {{
       width:100%;
       height:320px;
       border-radius:16px;
       overflow:hidden;
-      background:#0b1020;
+      background:#000000;
       border:1px solid rgba(148,163,184,.22);
     }}
-    .leaflet-container {{ background:#0b1020; font-family:Inter,system-ui,sans-serif; }}
+    .leaflet-container {{ background:#000000; font-family:Inter,system-ui,sans-serif; }}
     .map-chip {{
       position:absolute;
       z-index:500;
       left:14px;
       bottom:14px;
-      background:rgba(12,18,32,.86);
+      background:rgba(0,0,0,.88);
       border:1px solid rgba(148,163,184,.28);
       border-radius:999px;
       padding:8px 12px;
-      color:#e5e7eb;
+      color:#F2F1EA;
       font:700 12px/1.2 Inter,system-ui,sans-serif;
       backdrop-filter:blur(10px);
     }}
   </style>
 </head>
 <body>
-  <div id="mypos-map"><div class="map-chip">{'GPS locked' if gps_is_auto else 'Request location access above'}</div></div>
+  <div id="{map_id}"><div class="map-chip">{'GPS locked' if gps_is_auto else 'Request location access above'}</div></div>
   <script>
     const center = [{center_lat:.6f}, {center_lon:.6f}];
     const cases = {payload};
-    const map = L.map("mypos-map", {{ center, zoom: 13, preferCanvas: true }});
+    const map = L.map({map_id_js}, {{ center, zoom: 15, preferCanvas: true }});
     L.tileLayer("{tile_url}", {{
       attribution: "&copy; OpenStreetMap &copy; CARTO",
       subdomains: "abcd",
@@ -1991,7 +2102,7 @@ def browser_gps_permission_widget(vol_id: str):
 <style>
   .gps-permission {{
     font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
-    background:#121b2b;
+    background:#000000;
     border:1px solid rgba(148,163,184,.22);
     border-radius:16px;
     padding:16px;
@@ -1999,16 +2110,16 @@ def browser_gps_permission_widget(vol_id: str):
     grid-template-columns:minmax(0,1fr) auto;
     gap:12px;
     align-items:center;
-    color:#94a3b8;
+    color:#8F9B8D;
   }}
   .gps-title {{
-    color:#f8fafc;
+    color:#F2F1EA;
     font-size:15px;
     font-weight:800;
     letter-spacing:.01em;
   }}
   .gps-text {{
-    color:#94a3b8;
+    color:#8F9B8D;
     font-size:13px;
     margin-top:4px;
     line-height:1.35;
@@ -2016,8 +2127,8 @@ def browser_gps_permission_widget(vol_id: str):
   #gps-enable {{
     border:1px solid rgba(255,255,255,.08);
     border-radius:12px;
-    background:#ff6b86;
-    color:#090d18;
+    background:#D9825B;
+    color:#000000;
     font-weight:800;
     padding:12px 18px;
     cursor:pointer;
@@ -2032,7 +2143,7 @@ def browser_gps_permission_widget(vol_id: str):
     grid-column:1 / -1;
     font-size:13px;
     line-height:1.35;
-    color:#94a3b8;
+    color:#8F9B8D;
     background:rgba(2,6,23,.38);
     border:1px solid rgba(148,163,184,.14);
     border-radius:10px;
@@ -2056,11 +2167,11 @@ def browser_gps_permission_widget(vol_id: str):
     try {{
       const result = await navigator.permissions.query({{name:"geolocation"}});
       if (result.state === "denied") {{
-        setStatus("Location is blocked for this site. Open site settings in the address bar and set Location to Allow, then reload.", "#ff6b86");
+        setStatus("Location is blocked for this site. Open site settings in the address bar and set Location to Allow, then reload.", "#D9825B");
       }} else if (result.state === "granted") {{
-        setStatus("Location is already allowed. Click the button to refresh your GPS fix.", "#49e37f");
+        setStatus("Location is already allowed. Click the button to refresh your GPS fix.", "#6EAD7A");
       }} else {{
-        setStatus("Location permission is not decided yet. Click the button to show the native browser prompt.", "#94a3b8");
+        setStatus("Location permission is not decided yet. Click the button to show the native browser prompt.", "#8F9B8D");
       }}
       result.onchange = readPermissionState;
     }} catch(e) {{}}
@@ -2069,7 +2180,7 @@ def browser_gps_permission_widget(vol_id: str):
     const lat = pos.coords.latitude.toFixed(6);
     const lon = pos.coords.longitude.toFixed(6);
     const acc = Math.round(pos.coords.accuracy || 0);
-    setStatus("<b style='color:#49e37f'>GPS saved:</b> " + lat + ", " + lon + " (±" + acc + "m)", "#94a3b8");
+    setStatus("<b style='color:#6EAD7A'>GPS saved:</b> " + lat + ", " + lon + " (±" + acc + "m)", "#8F9B8D");
     btn.textContent = "GPS Active";
     btn.disabled = false;
     const params = new URLSearchParams(window.parent.location.search);
@@ -2086,19 +2197,19 @@ def browser_gps_permission_widget(vol_id: str):
     btn.textContent = "Retry Location Access";
     const message = err && err.message ? err.message : "permission denied or timed out";
     if (err && err.code === 1) {{
-      setStatus("Location permission was denied. Use the browser address bar site settings to allow Location, then retry.", "#ff6b86");
+      setStatus("Location permission was denied. Use the browser address bar site settings to allow Location, then retry.", "#D9825B");
     }} else {{
-      setStatus("Location unavailable: " + message, "#ffb84d");
+      setStatus("Location unavailable: " + message, "#D6B85A");
     }}
   }}
   btn.addEventListener("click", function(){{
     if (!navigator.geolocation) {{
-      setStatus("This browser does not support geolocation.", "#ff6b86");
+      setStatus("This browser does not support geolocation.", "#D9825B");
       return;
     }}
     btn.disabled = true;
     btn.textContent = "Requesting...";
-    setStatus("Requesting native browser location permission...", "#94a3b8");
+    setStatus("Requesting native browser location permission...", "#8F9B8D");
     navigator.geolocation.getCurrentPosition(sendFix, fail, {{
       enableHighAccuracy: true,
       maximumAge: 0,
@@ -2110,14 +2221,14 @@ def browser_gps_permission_widget(vol_id: str):
 </script>
 """, height=150)
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# GROQ CLIENT
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+             
+                                                                                 
 client = Groq(api_key=os.getenv("GROQ_API_KEY")) if os.getenv("GROQ_API_KEY") else None
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# USER DB
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+         
+                                                                                 
 DEFAULT_USERS = {
     "ivan":  {"password":"1234",  "role":"volunteer","name":"Ivan Petrov",    "skill":"Mountain Rescue",   "address":"Independence Square, Kyiv",      "lat":50.45,"lon":30.52,"id":"V001"},
     "sarah": {"password":"1234",  "role":"volunteer","name":"Sarah Mitchell", "skill":"Paramedic / Medic", "address":"Olympic Stadium, Kyiv",          "lat":50.43,"lon":30.55,"id":"V002"},
@@ -2193,6 +2304,14 @@ def get_users():
         result[uname] = d
     return result
 
+def verify_current_session_password(password: str) -> bool:
+    user = st.session_state.get("current_user") or {}
+    uname = user.get("username")
+    if not uname:
+        return False
+    stored_user = get_users().get(uname)
+    return bool(stored_user and verify_password(stored_user.get("password"), password))
+
 def save_user(uname, u):
     password = u.get("password")
     if password and not password_is_hashed(password):
@@ -2250,9 +2369,9 @@ def session_user(uname: str, user: dict) -> dict:
 
 migrate_stored_plaintext_passwords()
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# HELPERS
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+         
+                                                                                 
 def haversine(lat1,lon1,lat2,lon2):
     R=6371; phi1,phi2=math.radians(lat1),math.radians(lat2)
     dphi=math.radians(lat2-lat1); dlam=math.radians(lon2-lon1)
@@ -2267,6 +2386,14 @@ def get_priority(score):
 
 def clamp_score(value, low=0, high=100):
     return max(low, min(high, int(round(value))))
+
+CLOSED_CASE_STATUSES = {"found", "closed", "unfound"}
+
+def is_case_closed(case: dict) -> bool:
+    return case.get("status") in CLOSED_CASE_STATUSES
+
+def is_case_active(case: dict) -> bool:
+    return not is_case_closed(case)
 
 def case_missing_hours_now(case: dict) -> float:
     """Total missing time, including elapsed time since the report was created."""
@@ -2292,7 +2419,7 @@ def dynamic_search_radius_km(case: dict) -> float:
     growth_steps = math.floor(case_missing_hours_now(case) * 2)
     return round(base_radius + growth_steps * 5.0, 1)
 
-# ─── Weather & Time Risk ──────────────────────────────────────────────────────
+                                                                                
 WEATHER_MODIFIERS = {
     "Clear":        {"Flood":0,  "Wildfire":8,  "Mountain / Forest":0,  "Urban Area":0,  "Missing Person":0,  "Other":0},
     "Rain":         {"Flood":20, "Wildfire":-5, "Mountain / Forest":12, "Urban Area":5,  "Missing Person":8,  "Other":5},
@@ -2592,7 +2719,7 @@ def rescore_legacy_cases():
     """Re-score old cases that were created before the deterministic risk model."""
     changed = False
     for case in st.session_state.get("cases", []):
-        if case.get("risk_breakdown") or case.get("status") in ["found", "closed"]:
+        if case.get("risk_breakdown") or is_case_closed(case):
             continue
         assessed = deterministic_case_risk(case)
         case.update({
@@ -2626,7 +2753,7 @@ def compute_dynamic_risk(case):
             "t_mod":t_mod,"total":total,"effective":effective,
             "eff_label":eff_label,"eff_cls":eff_cls,"t_label":t_label}
 
-# ─── Disaster Team Compositions ───────────────────────────────────────────────
+                                                                                
 DISASTER_TEAMS={
     "Flood":            {"icon":"🌊","required":["Dive Rescue"],"preferred":["Paramedic / Medic","General Search"],"size":3,"note":"Dive team + medic + support"},
     "Wildfire":         {"icon":"🔥","required":["Firefighter"],"preferred":["Paramedic / Medic","Mountain Rescue"],"size":4,"note":"Fire suppression + evacuation + medic"},
@@ -2764,7 +2891,7 @@ def release_case_assignment(case: dict, new_status: str = "new"):
     case["team_ids"] = []
     case["team_roles"] = {}
     case["assignment_mode"] = None
-    if case.get("status") not in ["found", "closed"]:
+    if is_case_active(case):
         case["status"] = new_status
     db_save_case(case)
 
@@ -2934,10 +3061,46 @@ def uploaded_image_to_data_url(uploaded_file):
     encoded = base64.b64encode(file_bytes).decode("utf-8")
     return f"data:{mime};base64,{encoded}"
 
+CASE_CONTEXT_PHOTOS = {
+    "Flood": "https://picsum.photos/seed/findfirst-flood-water/320/320",
+    "Wildfire": "https://picsum.photos/seed/findfirst-wildfire-field/320/320",
+    "Mountain / Forest": "https://picsum.photos/seed/findfirst-mountain-forest/320/320",
+    "Urban Area": "https://picsum.photos/seed/findfirst-urban-search/320/320",
+    "Missing Person": "https://picsum.photos/seed/findfirst-search-path/320/320",
+    "Other": "https://picsum.photos/seed/findfirst-rescue-field/320/320",
+}
 
-# ─── Address helpers ─────────────────────────────────────────────────────────
-# The UI asks for addresses because real users do not know coordinates.
-# Internally we still need coordinates for the map and distance-based dispatch.
+COMMONS_FILE_BASE = "https://commons.wikimedia.org/wiki/Special:Redirect/file/"
+NAV_PHOTO_FILES = {
+    "dashboard": "Font Awesome 5 solid tachometer-alt.svg",
+    "my_missions": "Font Awesome 5 solid bullseye.svg",
+    "all_cases": "Font Awesome 5 solid folder-open.svg",
+    "teams": "Font Awesome 5 solid users.svg",
+    "volunteers": "Font Awesome 5 solid user-friends.svg",
+    "tracking": "Font Awesome 5 solid map-marker-alt.svg",
+    "ai_log": "Font Awesome 5 solid robot.svg",
+    "report_case": "Font Awesome 5 solid clipboard-list.svg",
+    "my_cases": "Font Awesome 5 solid folder-open.svg",
+}
+
+def commons_file_url(filename: str, width: int = 96) -> str:
+    return f"{COMMONS_FILE_BASE}{urllib.parse.quote(filename)}?width={width}"
+
+def nav_photo_url(page_id: str) -> str:
+    return commons_file_url(NAV_PHOTO_FILES.get(page_id, NAV_PHOTO_FILES["dashboard"]))
+
+def case_photo_html(case: dict) -> str:
+    uploaded = case.get("photo_data_url")
+    if uploaded:
+        return f'<img class="missing-photo" src="{uploaded}" alt="Missing person photo">'
+    category = case.get("category", "Other")
+    url = CASE_CONTEXT_PHOTOS.get(category, CASE_CONTEXT_PHOTOS["Other"])
+    return f'<img class="missing-photo missing-photo-context" src="{url}" alt="{category} context photo" loading="lazy">'
+
+
+
+                                                                               
+                                                                       
 ADDRESS_PRESETS = {
     "independence square, kyiv": (50.4501, 30.5234),
     "maidan nezalezhnosti, kyiv": (50.4501, 30.5234),
@@ -2964,9 +3127,9 @@ def geocode_address(address: str, default=DEFAULT_CENTER):
     for known, coords in ADDRESS_PRESETS.items():
         if known in key or key in known:
             return coords
-    # Deterministic fallback: keeps demo markers stable without requiring paid API keys.
+                                                                                        
     h = int(hashlib.sha256(key.encode("utf-8")).hexdigest()[:8], 16)
-    lat_offset = ((h % 2000) - 1000) / 100000  # about ±1.1 km
+    lat_offset = ((h % 2000) - 1000) / 100000                 
     lon_offset = (((h // 2000) % 2000) - 1000) / 100000
     return default[0] + lat_offset, default[1] + lon_offset
 
@@ -3102,7 +3265,7 @@ def render_report_location_picker():
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-html,body,#report-map{{height:100%;margin:0;background:#111827;font-family:Inter,Arial,sans-serif}}
+html,body,#report-map{{height:100%;margin:0;background:#000000;font-family:Inter,Arial,sans-serif}}
 .hint{{position:absolute;z-index:999;top:10px;left:10px;right:10px;background:rgba(15,23,42,.92);color:#e5e7eb;border:1px solid rgba(148,163,184,.35);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.35}}
 .coords{{font-family:monospace;color:#86efac}}
 </style></head><body>
@@ -3184,9 +3347,9 @@ def inject_live_clock_js():
     </script>
     """, height=0)
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# SESSION STATE INIT
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                    
+                                                                                 
 def init_state():
     if "logged_in" not in st.session_state:
         st.session_state.logged_in=False; st.session_state.current_user=None
@@ -3210,7 +3373,7 @@ def init_state():
             {"id":"V003","name":"Mike Torres",   "address":"Podil River Station, Kyiv", "lat":50.47,"lon":30.48,"status":"active","skill":"Dive Rescue",       "assigned":None,"username":"mike","online_status":"unknown","last_heartbeat":None,"hb_source":None,"device_id":None},
             {"id":"V004","name":"Admin",         "address":"Kyiv Central Station",     "lat":50.45,"lon":30.52,"status":"active","skill":"General Search",    "assigned":None,"username":"admin", "online_status":"unknown","last_heartbeat":None,"hb_source":None,"device_id":None},
         ]
-        # Sync any extra volunteers who signed up (stored in DB)
+                                                                
         existing_ids = {v["id"] for v in st.session_state.volunteers}
         for uname, u in get_users().items():
             if u.get("role")=="volunteer" and u.get("id") and u["id"] not in existing_ids:
@@ -3276,9 +3439,9 @@ sync_volunteer_assignments_from_cases()
 inject_live_clock_js()
 inject_heartbeat_badge_js()
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# AI FUNCTIONS
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+              
+                                                                                 
 def ai_score_case(case):
     deterministic = deterministic_case_risk(case)
     prompt=f"""You are an AI search-and-rescue coordinator. Analyze the case and return JSON only.
@@ -3344,7 +3507,7 @@ Return ONLY valid JSON (no markdown):
             return parse_json(r.choices[0].message.content)
     except Exception:
         pass
-    # manual fallback: never pick offline; prefer online, then unknown
+                                                                      
     eligible = [v for v in available_vols if v.get("online_status") != "offline"]
     if not eligible:
         return {"volunteer_id": None, "reason": "No reachable volunteers (all offline).",
@@ -3355,16 +3518,17 @@ Return ONLY valid JSON (no markdown):
     return {"volunteer_id": best["id"], "reason": "Nearest available volunteer (AI fallback).",
             "message_to_volunteer": f"Assigned to {case['id']}. Proceed to {case['location']}."}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# LOGIN PAGE
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+            
+                                                                                 
 def show_login():
+    st.markdown('<div class="login-mobile-scope"></div>', unsafe_allow_html=True)
     _,col,_=st.columns([1,2,1])
     with col:
-        st.markdown("""<div style="text-align:center;padding:40px 0 28px">
-          <div style="font-family:var(--font-head);font-size:2rem;font-weight:800;letter-spacing:-.5px;">
+        st.markdown("""<div class="login-hero" style="text-align:center;padding:40px 0 28px">
+          <div class="login-hero-title" style="font-family:var(--font-head);font-size:2rem;font-weight:800;letter-spacing:-.5px;">
             Find<span style="color:var(--red-strong)">First</span></div>
-          <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">
+          <div class="login-hero-sub" style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">
             Emergency Coordination Platform</div></div>""",unsafe_allow_html=True)
         tab_in,tab_up=st.tabs(["Sign In","Create Account"])
 
@@ -3389,7 +3553,7 @@ def show_login():
                     st.session_state._session_token = token
                     st.query_params["session_token"] = token
                     st.query_params["page"] = "dashboard"
-                    # Register in heartbeat DB if volunteer
+                                                           
                     if user.get("role")=="volunteer" and user.get("id"):
                         with get_db() as conn:
                             conn.execute("""INSERT OR IGNORE INTO hb_status(volunteer_id,name,hb_interval,updated_at)
@@ -3430,7 +3594,7 @@ def show_login():
                         nid=next_volunteer_id()
                         vol_lat, vol_lon = geocode_address(vol_address)
                         new_user={"password":su_pw,"role":"volunteer","name":su_name.strip(),"skill":vol_skill,"address":vol_address.strip(),"lat":vol_lat,"lon":vol_lon,"id":nid}
-                        # Add to in-memory volunteers immediately (visible right away)
+                                                                                      
                         if not any(v["id"]==nid for v in st.session_state.volunteers):
                             st.session_state.volunteers.append({"id":nid,"name":su_name.strip(),"address":vol_address.strip(),"lat":vol_lat,"lon":vol_lon,"status":"active","skill":vol_skill,"assigned":None,"username":uname,"online_status":"unknown","last_heartbeat":None,"hb_source":None,"device_id":None})
                         with get_db() as conn:
@@ -3450,9 +3614,9 @@ def show_login():
                     st.rerun()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# SIDEBAR
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+         
+                                                                                 
 def show_sidebar():
     u=st.session_state.current_user; role=u["role"]
     with st.sidebar:
@@ -3480,7 +3644,7 @@ def show_sidebar():
         active_weather = [
             ensure_case_weather(c)
             for c in st.session_state.get("cases", [])
-            if c.get("status") not in ["found", "closed"]
+            if is_case_active(c)
         ]
         if active_weather:
             weather_counts = {}
@@ -3502,7 +3666,7 @@ def show_sidebar():
                 'Weather is detected automatically from each missing person map point.</div>',
                 unsafe_allow_html=True,
             )
-        active_cases=sum(1 for c in st.session_state.cases if c.get("status") not in ["found","closed"])
+        active_cases=sum(1 for c in st.session_state.cases if is_case_active(c))
         free_vols=sum(1 for v in st.session_state.volunteers if v["status"]=="active")
         online_vols=sum(1 for v in st.session_state.volunteers if v.get("online_status")=="online")
         s1,s2=st.columns(2)
@@ -3510,18 +3674,27 @@ def show_sidebar():
         with s2: st.markdown(f'<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;margin:8px 0 4px"><div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--green);font-weight:500">{online_vols}</div><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Online</div></div>',unsafe_allow_html=True)
         st.markdown('<div style="height:8px"></div>',unsafe_allow_html=True)
         if role=="volunteer":
-            pages=[("dashboard","📡","Dashboard"),("my_missions","🎯","My Missions"),
-                   ("all_cases","🗂️","All Cases"),("teams","🧩","Teams"),
-                   ("volunteers","👥","Volunteers"),
-                   ("tracking","📡","Tracking & Check-ins"),("ai_log","🤖","AI Log")]
+            pages=[("dashboard","Dashboard"),("my_missions","My Missions"),
+                   ("all_cases","All Cases"),("teams","Teams"),
+                   ("volunteers","Volunteers"),
+                   ("tracking","Tracking & Check-ins"),("ai_log","AI Log")]
         else:
-            pages=[("dashboard","📡","Dashboard"),("report_case","📋","Report Missing"),("my_cases","📁","My Reports")]
-        for pid,icon,label in pages:
+            pages=[("dashboard","Dashboard"),("report_case","Report Missing"),("my_cases","My Reports")]
+        for pid,label in pages:
             is_active=st.session_state.active_page==pid
-            if st.button(f"{'●' if is_active else '○'}  {icon}  {label}",key=f"nav_{pid}",use_container_width=True):
-                st.session_state.active_page=pid
-                st.query_params["page"] = pid
-                st.rerun()
+            img_col, nav_col = st.columns([0.16, 1], gap=None)
+            with img_col:
+                active_class = " active" if is_active else ""
+                st.markdown(
+                    f'<img class="sidebar-nav-photo{active_class}" src="{nav_photo_url(pid)}" alt="{label} photo" loading="lazy">',
+                    unsafe_allow_html=True,
+                )
+            with nav_col:
+                if st.button(f"{'●' if is_active else '○'}  {label}",key=f"nav_{pid}",use_container_width=True):
+                    st.session_state.active_page=pid
+                    st.query_params["page"] = pid
+                    st.rerun()
+            st.markdown('<div class="sidebar-nav-spacer"></div>', unsafe_allow_html=True)
         if st.session_state.notifications:
             st.markdown('<div style="margin:16px 8px 6px;font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Recent Dispatches</div>',unsafe_allow_html=True)
             for n in st.session_state.notifications[-3:][::-1]:
@@ -3532,7 +3705,7 @@ def show_sidebar():
         rb="var(--blue-dim)" if role=="volunteer" else "var(--green-dim)"
         st.markdown(f'<div style="border-top:1px solid var(--border);padding:14px 12px;display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;border-radius:9px;background:{rb};border:1px solid color-mix(in srgb, {rc} 28%, transparent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.85rem;color:{rc};flex-shrink:0">{initials}</div><div style="min-width:0"><div style="font-size:.85rem;font-weight:600">{u["name"]}</div><div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">{role}</div></div></div>',unsafe_allow_html=True)
         if st.button("Sign Out",use_container_width=True):
-            # Mark offline in DB
+                                
             if u.get("role")=="volunteer" and u.get("id"):
                 db_set_offline(u["id"])
             token = st.session_state.get("_session_token")
@@ -3542,9 +3715,9 @@ def show_sidebar():
             st.session_state.logged_in=False; st.session_state.current_user=None; st.rerun()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# SHARED CARD RENDERER
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                      
+                                                                                 
 def close_case_as_found(case, actor_name="Unknown", actor_role="reporter", note=""):
     """Close a case as found/returned and release assigned volunteer resources."""
     now = datetime.now()
@@ -3577,10 +3750,143 @@ def close_case_as_found(case, actor_name="Unknown", actor_role="reporter", note=
     })
     db_save_case(case)
 
+def close_case_as_unfound(case, actor_name="Unknown", actor_role="volunteer", report=None):
+    now = datetime.now()
+    report = report or {}
+    case["status"] = "unfound"
+    case["unfound_at"] = now.isoformat()
+    case["unfound_by"] = actor_name
+    case["unfound_by_role"] = actor_role
+    case["deceased_report"] = {
+        "identity_confirmed_as": report.get("identity_confirmed_as", "").strip(),
+        "recovery_location": report.get("recovery_location", "").strip(),
+        "confirmed_by": report.get("confirmed_by", "").strip(),
+        "condition": report.get("condition", "").strip(),
+        "official_reference": report.get("official_reference", "").strip(),
+        "notes": report.get("notes", "").strip(),
+        "created_at": now.isoformat(),
+    }
+
+    assigned_ids = []
+    if case.get("assigned_to"):
+        assigned_ids.append(case["assigned_to"])
+    assigned_ids.extend(case.get("team_ids", []))
+    assigned_ids = list(dict.fromkeys(assigned_ids))
+
+    for vid in assigned_ids:
+        v = next((x for x in st.session_state.volunteers if x["id"] == vid), None)
+        if v:
+            v["status"] = "active"
+            v["assigned"] = None
+
+    case["assigned_to"] = None
+    case["team_ids"] = []
+    case["team_roles"] = {}
+    case["assignment_mode"] = None
+
+    add_notification(
+        f"[{now.strftime('%H:%M')}] ⚫ {case['id']} closed as unfound by {actor_name}"
+    )
+    add_ai_log({
+        "time": now.strftime("%H:%M:%S"),
+        "event": f"⚫ Unfound closure {case['id']}",
+        "detail": f"{case['name']} closed with deceased report. Confirmed by: {case['deceased_report']['confirmed_by']}",
+        "score": None
+    })
+    db_save_case(case)
+
+def submit_unfound_report(case_id: str, password_key: str, identity_key: str, location_key: str, confirmed_by_key: str, condition_key: str, reference_key: str, notes_key: str):
+    case = _case_by_id(case_id)
+    if not case or is_case_closed(case):
+        return
+    password = st.session_state.get(password_key, "")
+    identity = st.session_state.get(identity_key, "")
+    location = st.session_state.get(location_key, "")
+    confirmed_by = st.session_state.get(confirmed_by_key, "")
+    condition = st.session_state.get(condition_key, "")
+    reference = st.session_state.get(reference_key, "")
+    notes = st.session_state.get(notes_key, "")
+    if not verify_current_session_password(password):
+        st.session_state[f"unfound_error_{case_id}"] = "Session password is incorrect."
+        return
+    missing = []
+    if not identity.strip():
+        missing.append("identity")
+    if not location.strip():
+        missing.append("recovery location")
+    if not confirmed_by.strip():
+        missing.append("confirmed by")
+    if not condition.strip():
+        missing.append("condition")
+    if missing:
+        st.session_state[f"unfound_error_{case_id}"] = "Missing required fields: " + ", ".join(missing)
+        return
+    user = st.session_state.get("current_user", {})
+    close_case_as_unfound(
+        case,
+        actor_name=user.get("name", "Operator"),
+        actor_role=user.get("role", "operator"),
+        report={
+            "identity_confirmed_as": identity,
+            "recovery_location": location,
+            "confirmed_by": confirmed_by,
+            "condition": condition,
+            "official_reference": reference,
+            "notes": notes,
+        },
+    )
+    st.session_state[f"unfound_open_{case_id}"] = False
+    st.session_state[f"unfound_error_{case_id}"] = ""
+
+def render_unfound_form(case):
+    if not is_case_active(case):
+        return
+    key = f"unfound_open_{case['id']}"
+    if st.button("Unfound", key=f"open_unfound_{case['id']}", use_container_width=True):
+        st.session_state[key] = not st.session_state.get(key, False)
+    if not st.session_state.get(key, False):
+        return
+    error = st.session_state.get(f"unfound_error_{case['id']}", "")
+    st.markdown(
+        f"""<div style="background:var(--red-dim);border:1px solid color-mix(in srgb,var(--red) 28%,transparent);border-radius:14px;padding:14px 16px;margin:10px 0;color:var(--text2)">
+          <div style="font-weight:800;color:var(--red);margin-bottom:4px">Deceased / Unfound Report</div>
+          <div style="font-size:.78rem;color:var(--text3)">This action closes {case['id']} and releases assigned responders. Enter your current session password and complete the report.</div>
+        </div>""",
+        unsafe_allow_html=True,
+    )
+    if error:
+        st.error(error)
+    with st.form(f"unfound_form_{case['id']}"):
+        c1, c2 = st.columns(2)
+        with c1:
+            st.text_input("Current session password *", type="password", key=f"unfound_password_{case['id']}")
+            st.text_input("Identity confirmed as *", value=f"{case.get('name','')}, {case.get('age','')} yrs", key=f"unfound_identity_{case['id']}")
+            st.text_input("Recovery location *", value=case.get("location", ""), key=f"unfound_location_{case['id']}")
+        with c2:
+            st.text_input("Confirmed by *", placeholder="e.g. Medical examiner, police, team lead", key=f"unfound_confirmed_by_{case['id']}")
+            st.selectbox("Condition *", ["Deceased - identity confirmed", "Deceased - pending official confirmation", "Remains located", "Other"], key=f"unfound_condition_{case['id']}")
+            st.text_input("Official reference", placeholder="Case/ref number if available", key=f"unfound_reference_{case['id']}")
+        st.text_area("Notes", placeholder="Circumstances, handoff details, restrictions, next steps...", height=90, key=f"unfound_notes_{case['id']}")
+        st.form_submit_button(
+            "Confirm Unfound Closure",
+            use_container_width=True,
+            on_click=submit_unfound_report,
+            args=(
+                case["id"],
+                f"unfound_password_{case['id']}",
+                f"unfound_identity_{case['id']}",
+                f"unfound_location_{case['id']}",
+                f"unfound_confirmed_by_{case['id']}",
+                f"unfound_condition_{case['id']}",
+                f"unfound_reference_{case['id']}",
+                f"unfound_notes_{case['id']}",
+            ),
+        )
+
 
 def reporter_found_action(case, user):
     """Reporter-only control: original reporter can close their own active case quickly."""
-    if case.get("status") in ["found", "closed"]:
+    if is_case_closed(case):
         return
     if case.get("reported_by_user") != user.get("username"):
         return
@@ -3620,7 +3926,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
         vol=next((v for v in st.session_state.volunteers if v["id"]==case["assigned_to"]),None)
         if vol: assigned_name=vol["name"]
     status_map={"new":"🆕 New","scoring":"⏳ Scoring","assigned":"👥 Team Assigned" if team_ids else "👤 Assigned",
-                "in_progress":"🔍 In Progress","found":"✅ Found","closed":"📁 Closed"}
+                "in_progress":"🔍 In Progress","found":"✅ Found","closed":"📁 Closed","unfound":"⚫ Unfound"}
     dr=compute_dynamic_risk(case)
     weather_text=weather_badge_text(case)
     eff_cls=dr["eff_cls"] if dr["total"]!=0 else cls
@@ -3631,11 +3937,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
     spec=DISASTER_TEAMS.get(case.get("category","Other"),DISASTER_TEAMS["Other"])
     team_tag=f'<span style="font-size:.66rem;color:var(--text3)">{spec["icon"]} {spec["note"]}</span>'
     radius_km = dynamic_search_radius_km(case)
-    photo=case.get("photo_data_url")
-    photo_html=(
-        f'<img class="missing-photo" src="{photo}" alt="Missing person photo">'
-        if photo else '<div class="missing-photo-placeholder">👤</div>'
-    )
+    photo_html=case_photo_html(case)
     st.markdown(f"""<div class="case-card {eff_cls}">
       <div style="display:flex;gap:14px;align-items:flex-start">
         {photo_html}
@@ -3661,7 +3963,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
     if show_actions and is_volunteer:
         ca,cb,cc,cd,_=st.columns([1,1,1,1,1.4])
         with ca:
-            if case.get("status") not in ["found","closed"]:
+            if is_case_active(case):
                 st.button(
                     "✅ Found",
                     key=f"found_{case['id']}",
@@ -3692,7 +3994,7 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
             can_join = (
                 my_vol
                 and case.get("status") == "assigned"
-                and case.get("status") not in ["found", "closed"]
+                and is_case_active(case)
                 and my_vol["id"] not in case.get("team_ids", [])
                 and my_vol.get("status") == "active"
                 and my_vol.get("online_status") != "offline"
@@ -3706,6 +4008,8 @@ def render_case_card(case, show_actions=False, is_volunteer=False, reporter_user
                 )
     if reporter_user:
         reporter_found_action(case, reporter_user)
+    if is_case_active(case):
+        render_unfound_form(case)
     if case.get("reasoning"):
         with st.expander(f"🤖 AI Analysis · {case['id']}"):
             if dr["total"]!=0:
@@ -3744,11 +4048,7 @@ def render_dashboard_case_card(case):
     eff_score = dr["effective"] if dr["total"] != 0 else case["priority_score"]
     desc = (case.get("description") or "")[:150]
     desc_suffix = "..." if len(case.get("description") or "") > 150 else ""
-    photo = case.get("photo_data_url")
-    photo_html = (
-        f'<img class="missing-photo" src="{photo}" alt="Missing person photo">'
-        if photo else '<div class="missing-photo-placeholder">👤</div>'
-    )
+    photo_html = case_photo_html(case)
     assigned_name = "Active"
     if case.get("team_ids"):
         names = team_names_for_case(case)
@@ -3788,7 +4088,7 @@ def render_dashboard_case_card(case):
 
     ca, cb, cc, cd, ce = st.columns([1, 1, 1, 1, 1.6])
     with ca:
-        if case.get("status") not in ["found", "closed"]:
+        if is_case_active(case):
             st.button("✓ Found", key=f"dash_found_{case['id']}", on_click=close_case_found_action, args=(case["id"], "volunteer", None))
     with cb:
         if case.get("status") == "new":
@@ -3802,7 +4102,7 @@ def render_dashboard_case_card(case):
         can_join = (
             my_vol
             and case.get("status") == "assigned"
-            and case.get("status") not in ["found", "closed"]
+            and is_case_active(case)
             and my_vol["id"] not in case.get("team_ids", [])
             and my_vol.get("status") == "active"
             and my_vol.get("online_status") != "offline"
@@ -3817,20 +4117,23 @@ def render_dashboard_case_card(case):
                     st.markdown(f"**Risk Factors:** {', '.join(case['risk_factors'])}")
                 if case.get("required_skills"):
                     st.markdown(f"**Skills:** {', '.join(case['required_skills'])}")
+    if is_case_active(case):
+        render_unfound_form(case)
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# VOLUNTEER PAGES
-# ═══════════════════════════════════════════════════════════════════════════════
-@ST_FRAGMENT
+                                                                                 
+                 
+                                                                                 
+@ST_FRAGMENT(run_every=CASES_REFRESH_INTERVAL)
 def page_dashboard_volunteer():
+    refresh_shared_cases()
     sync_online_status()
     u=st.session_state.current_user
-    # browser ping JS (keeps the logged-in volunteer marked online)
+                                                                   
     my_vol=next((v for v in st.session_state.volunteers if v.get("username")==u["username"]),None)
     if my_vol and HAS_FASTAPI:
         streamlit.components.v1.html(browser_ping_js(my_vol["id"]),height=0)
 
-    active_c=[c for c in st.session_state.cases if c.get("status") not in ["found","closed"]]
+    active_c=[c for c in st.session_state.cases if is_case_active(c)]
     critical_c=[c for c in active_c if compute_dynamic_risk(c)["effective"]>=85]
     free_v=[v for v in st.session_state.volunteers if v["status"]=="active"]
     online_v=[v for v in st.session_state.volunteers if v.get("online_status")=="online"]
@@ -3848,7 +4151,7 @@ def page_dashboard_volunteer():
       <div class="stat-card blue"><div class="stat-label">Found Total</div><div class="stat-num">{found_total}</div><div class="stat-trend">Successfully resolved</div></div>
     </div>""",unsafe_allow_html=True)
 
-    # Weather + time risk banner
+                                
     t_mod,t_label=get_time_risk()
     risk_snapshots=[compute_dynamic_risk(c) for c in active_c]
     high_risk_cases=[c for c,dr in zip(active_c, risk_snapshots) if dr["total"]>=15]
@@ -3917,8 +4220,9 @@ def page_dashboard_volunteer():
                 {online_badge_html(vol)}</div></div>""",unsafe_allow_html=True)
 
 
-@ST_FRAGMENT
+@ST_FRAGMENT(run_every=CASES_REFRESH_INTERVAL)
 def page_my_missions():
+    refresh_shared_cases()
     sync_online_status()
     u=st.session_state.current_user
     my_vol=next((v for v in st.session_state.volunteers if v.get("username")==u["username"]),None)
@@ -3930,8 +4234,8 @@ def page_my_missions():
         c for c in st.session_state.cases
         if c.get("assigned_to")==my_vol["id"] or my_vol["id"] in c.get("team_ids", [])
     ]
-    active_m=[c for c in my_cases if c.get("status") not in ["found","closed"]]
-    done_m=[c for c in my_cases if c.get("status") in ["found","closed"]]
+    active_m=[c for c in my_cases if is_case_active(c)]
+    done_m=[c for c in my_cases if is_case_closed(c)]
     sc={"active":"var(--green)","busy":"var(--yellow)","offline":"var(--red-strong)"}.get(my_vol["status"],"var(--text3)")
     st.markdown(f"""<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px">
       <div style="width:52px;height:52px;border-radius:12px;background:var(--blue-dim);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🧑‍🚒</div>
@@ -3951,12 +4255,13 @@ def page_my_missions():
         for c in done_m: render_case_card(c)
 
 
-@ST_FRAGMENT
+@ST_FRAGMENT(run_every=CASES_REFRESH_INTERVAL)
 def page_all_cases():
+    refresh_shared_cases()
     sync_online_status()
     st.markdown("""<div class="page-header"><div><div class="page-title">All <span>Cases</span></div><div class="page-sub">Complete operations log</div></div></div>""",unsafe_allow_html=True)
-    active_c=[c for c in st.session_state.cases if c.get("status") not in ["found","closed"]]
-    closed_c=[c for c in st.session_state.cases if c.get("status") in ["found","closed"]]
+    active_c=[c for c in st.session_state.cases if is_case_active(c)]
+    closed_c=[c for c in st.session_state.cases if is_case_closed(c)]
     f1,f2,_=st.columns([1,1,3])
     with f1: fs=st.selectbox("Status",["All Active","Critical only","High+","Unassigned"])
     with f2: fc=st.selectbox("Type",["All types"]+list(set(c["category"] for c in st.session_state.cases)))
@@ -3975,12 +4280,13 @@ def page_all_cases():
                 st.markdown(f'<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--text3)">✅ <b style="color:var(--text2)">{c["id"]}</b> — {c["name"]}, {c["age"]} yrs · {c["location"]}</div>',unsafe_allow_html=True)
 
 
-@ST_FRAGMENT
+@ST_FRAGMENT(run_every=CASES_REFRESH_INTERVAL)
 def page_teams():
+    refresh_shared_cases()
     sync_online_status()
     st.markdown("""<div class="page-header"><div><div class="page-title">Team <span>Builder</span></div><div class="page-sub">Build one operational crew at a time from risk, distance, and capability</div></div></div>""",unsafe_allow_html=True)
 
-    active_cases=[c for c in st.session_state.cases if c.get("status") not in ["found","closed"]]
+    active_cases=[c for c in st.session_state.cases if is_case_active(c)]
     available=assignable_volunteers()
     online_free=[v for v in available if v.get("online_status")=="online"]
     st.markdown(f"""<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 20px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;font-family:var(--font-mono);font-size:.78rem">
@@ -4171,7 +4477,7 @@ def page_volunteers():
     sync_online_status()
     st.markdown("""<div class="page-header"><div><div class="page-title">Volunteer <span>Registry</span></div><div class="page-sub">Team management & live online status</div></div></div>""",unsafe_allow_html=True)
 
-    # Summary online strip
+                          
     total=len(st.session_state.volunteers)
     n_online=sum(1 for v in st.session_state.volunteers if v.get("online_status")=="online")
     n_offline=sum(1 for v in st.session_state.volunteers if v.get("online_status")=="offline")
@@ -4207,7 +4513,7 @@ def page_volunteers():
         sl={"active":"Available","busy":"On Mission","offline":"Offline"}.get(vol["status"],vol["status"])
         lhb=vol.get("last_heartbeat"); src=vol.get("hb_source") or ""; did=vol.get("device_id") or ""
         lhb_str=lhb[:16].replace("T"," ") if lhb else "Never"
-        nearby=sorted([(haversine(vol["lat"],vol["lon"],c["lat"],c["lon"]),c["id"]) for c in st.session_state.cases if c.get("status") not in ["found","closed"]])
+        nearby=sorted([(haversine(vol["lat"],vol["lon"],c["lat"],c["lon"]),c["id"]) for c in st.session_state.cases if is_case_active(c)])
         nearby_text=" · ".join(f"{d:.1f}km→{cid}" for d,cid in nearby[:3]) if nearby else "—"
         ai=next((x for x in st.session_state.cases if x["id"]==vol.get("assigned")),None)
         ainfo=f' · <b>{ai["id"]}</b>: {ai["name"]}' if ai else ""
@@ -4267,9 +4573,9 @@ def page_ai_log():
         if st.button("🗑️ Clear Log"): clear_ai_log(); rerun_current_scope()
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# TRACKING PAGE  (volunteer check-ins + live Leaflet map)
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                                                         
+                                                                                 
 def page_tracking():
     sync_online_status()
     u=st.session_state.current_user
@@ -4281,7 +4587,7 @@ def page_tracking():
     st.markdown("""<div class="page-header"><div><div class="page-title">Field <span>Tracking</span></div>
       <div class="page-sub">Submit check-ins · live volunteer positions · heartbeat log</div></div></div>""",unsafe_allow_html=True)
 
-    # ── Check-in form ─────────────────────────────────────────────────────────
+                                                                                
     if my_vol:
         st.markdown('<div class="section-head">📍 My Position</div>',unsafe_allow_html=True)
         st.markdown("""<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:10px">
@@ -4291,6 +4597,14 @@ def page_tracking():
         browser_gps_permission_widget(my_vol["id"])
 
         latest_gps = db_get_vol_gps(my_vol["id"])
+        if gps_fix and gps_fix.get("lat") is not None and gps_fix.get("lon") is not None:
+            latest_gps = {
+                **(latest_gps or {}),
+                "lat": float(gps_fix["lat"]),
+                "lon": float(gps_fix["lon"]),
+                "address": gps_fix.get("address") or f"Browser GPS {float(gps_fix['lat']):.5f}, {float(gps_fix['lon']):.5f}",
+                "updated_at": gps_fix.get("updated_at") or datetime.now().isoformat(),
+            }
         hb_source = db_get_all_statuses().get(my_vol["id"], {}).get("hb_source")
         gps_address = (latest_gps or {}).get("address", "")
         gps_is_auto = bool(latest_gps and (gps_address.startswith("Browser GPS") or hb_source in ["browser", "agent"]))
@@ -4320,7 +4634,7 @@ def page_tracking():
                     "🚨 Need backup","⚠️ Lost contact with team","🏥 Medical situation",
                     "✅ Target located","🔋 Low battery / heading back"])
             with ci2:
-                ci_case=st.selectbox("Related Case (optional)",["—"]+[f"{c['id']} — {c['name']}" for c in st.session_state.cases if c.get("status") not in ["found","closed"]])
+                ci_case=st.selectbox("Related Case (optional)",["—"]+[f"{c['id']} — {c['name']}" for c in st.session_state.cases if is_case_active(c)])
                 ci_note=st.text_area("Notes to HQ",placeholder="Anything to report...",height=90)
             sub=st.form_submit_button("📡 Send Check-In",use_container_width=True)
 
@@ -4342,22 +4656,22 @@ def page_tracking():
                 "note":ci_note or "","timestamp":now.isoformat()}
             add_checkin(ci)
             my_vol["address"]=ci_place; my_vol["lat"]=ci_lat; my_vol["lon"]=ci_lon; my_vol["last_checkin"]=now.isoformat()
-            # Also write to heartbeat DB so /status picks it up
+                                                               
             db_save_vol_gps(my_vol["id"],ci_lat,ci_lon,ci_place)
             db_upsert_heartbeat(my_vol["id"],"checkin",HB_DEFAULT_INTERVAL,None,None,ci_lat,ci_lon,ci_status)
             if any(kw in ci_status for kw in ["backup","Lost contact","Medical"]):
                 add_notification(f"[{now.strftime('%H:%M')}] 🚨 DISTRESS — {my_vol['name']}: {ci_status}")
             st.success(f"✅ Check-in {ci['id']} sent at {now.strftime('%H:%M:%S')}"); st.rerun()
 
-    # ── Live map ──────────────────────────────────────────────────────────────
+                                                                                
     st.markdown('<div class="section-head" style="margin-top:24px">🗺️ Live Positions</div>',unsafe_allow_html=True)
-    map_bg = "#1e1e1e" if IS_DARK else "#f5f7fb"
-    map_card = "#2d2d30" if IS_DARK else "#ffffff"
-    map_border = "#3e3e42" if IS_DARK else "#dbe3ee"
-    map_text = "#f3f3f3" if IS_DARK else "#0f172a"
-    map_text2 = "#cccccc" if IS_DARK else "#334155"
-    map_text3 = "#9d9d9d" if IS_DARK else "#64748b"
-    map_green, map_red, map_orange, map_yellow = "#22c55e", "#dc2626", "#f97316", "#eab308"
+    map_bg = "#000000" if IS_DARK else "#F6F1E8"
+    map_card = "#000000" if IS_DARK else "#FFFCF5"
+    map_border = "#262626" if IS_DARK else "#D5C9B8"
+    map_text = "#F2F1EA" if IS_DARK else "#1F211D"
+    map_text2 = "#CDD4C8" if IS_DARK else "#4C5048"
+    map_text3 = "#8F9B8D" if IS_DARK else "#6D7168"
+    map_green, map_red, map_orange, map_yellow = "#6EAD7A", "#D9825B", "#C9863A", "#D6B85A"
     tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" if IS_DARK else "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
 
     vol_markers=""; case_markers=""
@@ -4370,7 +4684,7 @@ def page_tracking():
         vol_markers+=f"""L.circleMarker([{vol['lat']},{vol['lon']}],{{radius:10,color:'{color}',fillColor:'{color}',fillOpacity:.85,weight:2}}).bindPopup('<b>{popup}</b>').addTo(map);
 L.marker([{vol['lat']},{vol['lon']}],{{icon:L.divIcon({{html:'<div style="color:#fff;font-size:9px;font-weight:700;white-space:nowrap;margin-top:14px;text-shadow:0 1px 3px #000">{fn}</div>',className:'',iconAnchor:[20,0]}})}}).addTo(map);\n"""
     for c in st.session_state.cases:
-        if c.get("status") not in ["found","closed"]:
+        if is_case_active(c):
             l,cl=get_priority(c["priority_score"])
             col={"critical":map_red,"high":map_orange,"medium":map_yellow,"low":map_green}.get(cl,map_red)
             radius_km = dynamic_search_radius_km(c)
@@ -4395,7 +4709,7 @@ d.innerHTML='<b style="color:{map_text}">LEGEND</b><br><span style="color:{map_g
 leg.addTo(map);</script></body></html>"""
     streamlit.components.v1.html(map_html,height=490)
 
-    # ── Heartbeat log ─────────────────────────────────────────────────────────
+                                                                                
     st.markdown('<div class="section-head" style="margin-top:24px">📋 Heartbeat Log (DB)</div>',unsafe_allow_html=True)
 
     hb_tab1, hb_tab2 = st.tabs(["Check-In History", "Raw Heartbeat DB"])
@@ -4422,7 +4736,7 @@ leg.addTo(map);</script></body></html>"""
                     <div style="font-family:var(--font-mono);font-size:.72rem;color:var(--text3);flex-shrink:0;margin-left:12px">{ts}</div></div></div>""",unsafe_allow_html=True)
 
     with hb_tab2:
-        # Show raw DB data
+                          
         if my_vol:
             log=db_get_log(my_vol["id"],limit=20)
             if log:
@@ -4443,13 +4757,15 @@ leg.addTo(map);</script></body></html>"""
               GET  http://localhost:{FASTAPI_PORT}/log/{{vol_id}} — heartbeat history</div>""",unsafe_allow_html=True)
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# REPORTER PAGES
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+                
+                                                                                 
+@ST_FRAGMENT(run_every=CASES_REFRESH_INTERVAL)
 def page_dashboard_reporter():
+    refresh_shared_cases()
     u=st.session_state.current_user
     my=[ c for c in st.session_state.cases if c.get("reported_by_user")==u["username"]]
-    active_m=[c for c in my if c.get("status") not in ["found","closed"]]
+    active_m=[c for c in my if is_case_active(c)]
     st.markdown(f"""<div class="page-header"><div><div class="page-title">My <span>Overview</span></div>
       <div class="page-sub">{live_time_html('date')}</div></div>
       <span class="role-tag reporter">🟢 Reporter</span></div>""",unsafe_allow_html=True)
@@ -4469,7 +4785,7 @@ def page_dashboard_reporter():
         fv=sum(1 for v in st.session_state.volunteers if v["status"]=="active")
         bv=sum(1 for v in st.session_state.volunteers if v["status"]=="busy")
         ov=sum(1 for v in st.session_state.volunteers if v.get("online_status")=="online")
-        st.markdown(f'<div style="font-size:.82rem;color:var(--text2);line-height:2.2;font-family:var(--font-mono)">🟢 {fv} volunteers free &nbsp;·&nbsp; 🟡 {bv} on mission &nbsp;·&nbsp; 📡 {ov} online &nbsp;·&nbsp; 🚨 {sum(1 for c in st.session_state.cases if c.get("status") not in ["found","closed"])} active cases</div>',unsafe_allow_html=True)
+        st.markdown(f'<div style="font-size:.82rem;color:var(--text2);line-height:2.2;font-family:var(--font-mono)">🟢 {fv} volunteers free &nbsp;·&nbsp; 🟡 {bv} on mission &nbsp;·&nbsp; 📡 {ov} online &nbsp;·&nbsp; 🚨 {sum(1 for c in st.session_state.cases if is_case_active(c))} active cases</div>',unsafe_allow_html=True)
 
 
 def page_report_case():
@@ -4591,15 +4907,17 @@ def page_report_case():
         st.warning("Missing required fields: " + ", ".join(missing))
 
 
+@ST_FRAGMENT(run_every=CASES_REFRESH_INTERVAL)
 def page_my_cases_reporter():
+    refresh_shared_cases()
     u=st.session_state.current_user
     st.markdown("""<div class="page-header"><div><div class="page-title">My <span>Reports</span></div></div>
       <span class="role-tag reporter">🟢 Reporter</span></div>""",unsafe_allow_html=True)
     my=[c for c in st.session_state.cases if c.get("reported_by_user")==u["username"]]
     if not my:
         st.markdown('<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-text">No reports yet.</div></div>',unsafe_allow_html=True); return
-    active=sorted([c for c in my if c.get("status") not in ["found","closed"]],key=lambda c:c["priority_score"],reverse=True)
-    done=[c for c in my if c.get("status") in ["found","closed"]]
+    active=sorted([c for c in my if is_case_active(c)],key=lambda c:c["priority_score"],reverse=True)
+    done=[c for c in my if is_case_closed(c)]
     if active:
         st.markdown('<div class="section-head">🔴 Active</div>',unsafe_allow_html=True)
         for c in active:
@@ -4608,9 +4926,9 @@ def page_my_cases_reporter():
         st.markdown('<div class="section-head">✅ Resolved</div>',unsafe_allow_html=True)
         for c in done: render_case_card(c)
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# ROUTER
-# ═══════════════════════════════════════════════════════════════════════════════
+                                                                                 
+        
+                                                                                 
 if not st.session_state.logged_in:
     show_login()
 else:
