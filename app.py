@@ -83,6 +83,12 @@ except ImportError:
 
     HAS_FASTAPI = False
 
+from findfirst.geo import DEFAULT_CENTER, dynamic_search_radius_km, geocode_address, haversine
+from findfirst.media import avatar_initials, case_photo_html as media_case_photo_html, nav_photo_url, uploaded_image_to_data_url
+from findfirst.risk_engine import DISASTER_TEAMS, SKILL_GROUPS, build_team_for_case as core_build_team_for_case, clamp_score, compute_dynamic_risk as core_compute_dynamic_risk, deterministic_case_risk as core_deterministic_case_risk, get_priority, get_time_risk, is_case_active, is_case_closed, team_requirements_for_case as core_team_requirements_for_case, volunteer_team_score
+from findfirst.security import hash_password, password_is_hashed, verify_password
+from findfirst.weather import WEATHER_ICONS, WEATHER_MODIFIERS, WEATHER_TTL_MINUTES, fallback_weather_snapshot, fetch_open_meteo_weather, weather_snapshot_stale
+
 
 
                                                                                  
@@ -3038,73 +3044,16 @@ DEFAULT_USERS = {
 
 
 
-PASSWORD_SCHEME = "pbkdf2_sha256"
-
-PASSWORD_ITERATIONS = 210_000
 
 
 
-def hash_password(password: str) -> str:
-
-    salt = secrets.token_hex(16)
-
-    digest = hashlib.pbkdf2_hmac(
-
-        "sha256",
-
-        (password or "").encode("utf-8"),
-
-        salt.encode("utf-8"),
-
-        PASSWORD_ITERATIONS,
-
-    ).hex()
-
-    return f"{PASSWORD_SCHEME}${PASSWORD_ITERATIONS}${salt}${digest}"
 
 
 
-def password_is_hashed(value: str | None) -> bool:
-
-    return bool(value and value.startswith(f"{PASSWORD_SCHEME}$"))
 
 
 
-def verify_password(stored: str | None, provided: str) -> bool:
 
-    if not stored:
-
-        return False
-
-    if not password_is_hashed(stored):
-
-        return hmac.compare_digest(stored, provided or "")
-
-    try:
-
-        scheme, iterations, salt, expected = stored.split("$", 3)
-
-        if scheme != PASSWORD_SCHEME:
-
-            return False
-
-        actual = hashlib.pbkdf2_hmac(
-
-            "sha256",
-
-            (provided or "").encode("utf-8"),
-
-            salt.encode("utf-8"),
-
-            int(iterations),
-
-        ).hex()
-
-        return hmac.compare_digest(actual, expected)
-
-    except Exception:
-
-        return False
 
 
 
@@ -3297,339 +3246,48 @@ migrate_stored_plaintext_passwords()
 
                                                                                  
 
-def haversine(lat1,lon1,lat2,lon2):
-
-    R=6371; phi1,phi2=math.radians(lat1),math.radians(lat2)
-
-    dphi=math.radians(lat2-lat1); dlam=math.radians(lon2-lon1)
-
-    a=math.sin(dphi/2)**2+math.cos(phi1)*math.cos(phi2)*math.sin(dlam/2)**2
-
-    return R*2*math.atan2(math.sqrt(a),math.sqrt(1-a))
 
 
 
-def get_priority(score):
-
-    if score>=85: return "CRITICAL","critical"
-
-    if score>=65: return "HIGH","high"
-
-    if score>=40: return "MEDIUM","medium"
-
-    return "LOW","low"
 
 
 
-def clamp_score(value, low=0, high=100):
-
-    return max(low, min(high, int(round(value))))
 
 
 
-CLOSED_CASE_STATUSES = {"found", "closed", "unfound"}
 
 
 
-def is_case_closed(case: dict) -> bool:
-
-    return case.get("status") in CLOSED_CASE_STATUSES
 
 
 
-def is_case_active(case: dict) -> bool:
-
-    return not is_case_closed(case)
 
 
 
-def case_missing_hours_now(case: dict) -> float:
-
-    """Total missing time, including elapsed time since the report was created."""
-
-    try:
-
-        base_hours = float(case.get("time_missing") or 0)
-
-    except Exception:
-
-        base_hours = 0.0
-
-    created_at = case.get("created_at")
-
-    if created_at:
-
-        try:
-
-            elapsed = (datetime.now() - datetime.fromisoformat(created_at)).total_seconds() / 3600
-
-            base_hours += max(0.0, elapsed)
-
-        except Exception:
-
-            pass
-
-    return max(0.0, base_hours)
 
 
 
-def dynamic_search_radius_km(case: dict) -> float:
-
-    """Search area grows by 5 km for every 30 minutes the person is missing."""
-
-    try:
-
-        base_radius = float(case.get("search_radius_base_km") or case.get("search_radius_km") or 1.0)
-
-    except Exception:
-
-        base_radius = 1.0
-
-    growth_steps = math.floor(case_missing_hours_now(case) * 2)
-
-    return round(base_radius + growth_steps * 5.0, 1)
 
 
 
                                                                                 
 
-WEATHER_MODIFIERS = {
 
-    "Clear":        {"Flood":0,  "Wildfire":8,  "Mountain / Forest":0,  "Urban Area":0,  "Missing Person":0,  "Other":0},
 
-    "Rain":         {"Flood":20, "Wildfire":-5, "Mountain / Forest":12, "Urban Area":5,  "Missing Person":8,  "Other":5},
 
-    "Storm":        {"Flood":35, "Wildfire":5,  "Mountain / Forest":25, "Urban Area":15, "Missing Person":20, "Other":15},
 
-    "Snow":         {"Flood":12, "Wildfire":-8, "Mountain / Forest":30, "Urban Area":10, "Missing Person":22, "Other":18},
 
-    "Fog":          {"Flood":8,  "Wildfire":0,  "Mountain / Forest":15, "Urban Area":10, "Missing Person":15, "Other":8},
 
-    "Extreme Heat": {"Flood":5,  "Wildfire":40, "Mountain / Forest":12, "Urban Area":12, "Missing Person":10, "Other":5},
 
-}
 
-WEATHER_ICONS = {"Clear":"☀️","Rain":"🌧️","Storm":"⛈️","Snow":"❄️","Fog":"🌫️","Extreme Heat":"🔥"}
 
-WEATHER_TTL_MINUTES = 20
 
-OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 
-WMO_WEATHER_LABELS = {
 
-    0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
 
-    45: "Fog", 48: "Depositing rime fog",
 
-    51: "Light drizzle", 53: "Drizzle", 55: "Dense drizzle",
 
-    56: "Freezing drizzle", 57: "Dense freezing drizzle",
 
-    61: "Slight rain", 63: "Rain", 65: "Heavy rain",
-
-    66: "Freezing rain", 67: "Heavy freezing rain",
-
-    71: "Slight snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains",
-
-    80: "Rain showers", 81: "Rain showers", 82: "Violent rain showers",
-
-    85: "Snow showers", 86: "Heavy snow showers",
-
-    95: "Thunderstorm", 96: "Thunderstorm with hail", 99: "Severe thunderstorm with hail",
-
-}
-
-
-
-def classify_weather_snapshot(current: dict) -> str:
-
-    code = int(current.get("weather_code") or 0)
-
-    temp = float(current.get("temperature_2m") or 0)
-
-    apparent = float(current.get("apparent_temperature") or temp)
-
-    precipitation = float(current.get("precipitation") or 0)
-
-    rain = float(current.get("rain") or 0)
-
-    showers = float(current.get("showers") or 0)
-
-    snowfall = float(current.get("snowfall") or 0)
-
-    wind_gusts = float(current.get("wind_gusts_10m") or 0)
-
-    wind_speed = float(current.get("wind_speed_10m") or 0)
-
-    if apparent >= 35 or temp >= 37:
-
-        return "Extreme Heat"
-
-    if code in {95, 96, 99} or wind_gusts >= 70 or wind_speed >= 55:
-
-        return "Storm"
-
-    if code in {45, 48}:
-
-        return "Fog"
-
-    if code in {71, 73, 75, 77, 85, 86} or snowfall > 0:
-
-        return "Snow"
-
-    if code in {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82} or precipitation > 0 or rain > 0 or showers > 0:
-
-        return "Rain"
-
-    return "Clear"
-
-
-
-def fallback_weather_snapshot(lat=None, lon=None, error: str | None = None) -> dict:
-
-    return {
-
-        "category": "Clear",
-
-        "label": "Weather unavailable",
-
-        "source": "fallback",
-
-        "updated_at": datetime.now().isoformat(),
-
-        "lat": lat,
-
-        "lon": lon,
-
-        "error": error or "Weather API unavailable",
-
-    }
-
-
-
-def fetch_open_meteo_weather(lat: float, lon: float) -> dict:
-
-    params = {
-
-        "latitude": f"{float(lat):.6f}",
-
-        "longitude": f"{float(lon):.6f}",
-
-        "current": ",".join([
-
-            "temperature_2m", "apparent_temperature", "precipitation", "rain",
-
-            "showers", "snowfall", "weather_code", "cloud_cover",
-
-            "wind_speed_10m", "wind_gusts_10m", "is_day",
-
-        ]),
-
-        "timezone": "auto",
-
-    }
-
-    if HAS_REQUESTS:
-
-        response = requests.get(OPEN_METEO_URL, params=params, timeout=6)
-
-        response.raise_for_status()
-
-        payload = response.json()
-
-    else:
-
-        encoded = urllib.parse.urlencode(params)
-
-        with urllib.request.urlopen(f"{OPEN_METEO_URL}?{encoded}", timeout=6) as resp:
-
-            payload = json.loads(resp.read().decode("utf-8"))
-
-    current = payload.get("current") or {}
-
-    category = classify_weather_snapshot(current)
-
-    code = int(current.get("weather_code") or 0)
-
-    return {
-
-        "category": category,
-
-        "label": WMO_WEATHER_LABELS.get(code, f"WMO {code}"),
-
-        "source": "Open-Meteo",
-
-        "updated_at": datetime.now().isoformat(),
-
-        "observed_at": current.get("time"),
-
-        "lat": float(lat),
-
-        "lon": float(lon),
-
-        "weather_code": code,
-
-        "temperature_c": current.get("temperature_2m"),
-
-        "apparent_temperature_c": current.get("apparent_temperature"),
-
-        "precipitation_mm": current.get("precipitation"),
-
-        "rain_mm": current.get("rain"),
-
-        "snowfall_cm": current.get("snowfall"),
-
-        "cloud_cover_pct": current.get("cloud_cover"),
-
-        "wind_speed_kmh": current.get("wind_speed_10m"),
-
-        "wind_gusts_kmh": current.get("wind_gusts_10m"),
-
-        "is_day": current.get("is_day"),
-
-    }
-
-
-
-def weather_snapshot_stale(case: dict, max_age_minutes: int = WEATHER_TTL_MINUTES) -> bool:
-
-    weather = case.get("weather") or {}
-
-    if weather.get("category") not in WEATHER_MODIFIERS:
-
-        return True
-
-    if weather.get("source") == "fallback" or weather.get("label") == "Weather unavailable":
-
-        return True
-
-    try:
-
-        updated = datetime.fromisoformat(weather.get("updated_at", ""))
-
-        if datetime.now() - updated > timedelta(minutes=max_age_minutes):
-
-            return True
-
-    except Exception:
-
-        return True
-
-    try:
-
-        if abs(float(weather.get("lat")) - float(case.get("lat"))) > 0.002:
-
-            return True
-
-        if abs(float(weather.get("lon")) - float(case.get("lon"))) > 0.002:
-
-            return True
-
-    except Exception:
-
-        return True
-
-    return False
 
 
 
@@ -3691,296 +3349,47 @@ def weather_badge_text(case: dict) -> str:
 
 
 
-INCIDENT_BASE_RISK = {
 
-    "Flood": 38,
 
-    "Wildfire": 45,
 
-    "Mountain / Forest": 38,
 
-    "Urban Area": 24,
 
-    "Missing Person": 30,
 
-    "Other": 25,
 
-}
 
 
 
-LOCATION_RISK_RULES = [
 
-    ("water nearby", 16, ["river", "lake", "pond", "canal", "harbor", "sea", "beach", "bridge", "dam", "waterfall", "flood", "riverside"], ["Dive Rescue"]),
 
-    ("remote terrain", 14, ["forest", "woods", "mountain", "trail", "valley", "cliff", "cave", "ravine", "wilderness", "park"], ["Mountain Rescue", "Forest / Wilderness"]),
 
-    ("fire fuel zone", 10, ["dry grass", "wildfire", "smoke", "burn", "brush", "campfire"], ["Firefighter"]),
 
-    ("industrial hazard", 9, ["factory", "warehouse", "construction", "abandoned", "rail", "station", "tunnel", "substation"], ["General Search"]),
 
-    ("traffic corridor", 8, ["highway", "road", "motorway", "parking", "intersection", "bus stop"], ["General Search"]),
 
-    ("dense urban area", 5, ["mall", "market", "downtown", "metro", "subway", "apartment", "school", "stadium"], ["General Search"]),
 
-]
 
 
 
-CIRCUMSTANCE_RISK_RULES = [
 
-    ("medical vulnerability", 18, ["diabetes", "diabetic", "insulin", "heart", "seizure", "epilepsy", "dementia", "alzheimer", "autism", "medication"], ["Paramedic / Medic"]),
 
-    ("reported injury", 18, ["injured", "bleeding", "broken", "fall", "collapsed", "unconscious", "hypothermia", "heatstroke"], ["Paramedic / Medic"]),
 
-    ("violence or coercion concern", 20, ["abduct", "kidnap", "violence", "threat", "attack", "domestic", "stalker"], ["General Search"]),
-
-    ("lost communication", 8, ["phone off", "no signal", "battery dead", "not answering", "last call"], ["General Search"]),
-
-    ("low visibility or exposure", 10, ["night", "dark", "storm", "snow", "fog", "cold", "heat", "rain"], ["General Search"]),
-
-]
-
-
-
-def get_time_risk():
-
-    h=datetime.now().hour
-
-    if 21<=h or h<5: return 20,"🌙 Night"
-
-    if 5<=h<7 or 18<=h<21: return 10,"🌆 Dusk/Dawn"
-
-    return 0,"☀️ Daytime"
-
-
-
-def hours_missing_risk(hours):
-
-    h=float(hours or 0)
-
-    if h<=1: return 0
-
-    if h<=3: return 4
-
-    if h<=6: return 8
-
-    if h<=12: return 14
-
-    if h<=24: return 22
-
-    if h<=48: return 30
-
-    if h<=72: return 38
-
-    return 45
-
-
-
-def age_risk(age):
-
-    a=int(age or 0)
-
-    if a<=5: return 24, "very young child"
-
-    if a<=11: return 18, "child"
-
-    if a<=17: return 8, "teen"
-
-    if a>=75: return 18, "elderly adult"
-
-    if a>=60: return 14, "senior"
-
-    return 0, "adult"
-
-
-
-def _collect_rule_hits(text, rules):
-
-    hits, points, skills = [], 0, []
-
-    lower=(text or "").lower()
-
-    for label, pts, keywords, needed in rules:
-
-        if any(k in lower for k in keywords):
-
-            hits.append(label)
-
-            points += pts
-
-            skills.extend(needed)
-
-    return hits, points, skills
-
+def case_photo_html(case: dict) -> str:
+    return media_case_photo_html(case, IS_DARK)
 
 
 def deterministic_case_risk(case):
+    return core_deterministic_case_risk(case, ensure_case_weather)
 
-    category=case.get("category","Other")
 
-    weather_info=ensure_case_weather(case)
+def compute_dynamic_risk(case):
+    return core_compute_dynamic_risk(case, ensure_case_weather)
 
-    weather=weather_info.get("category","Clear")
 
-    base=INCIDENT_BASE_RISK.get(category, INCIDENT_BASE_RISK["Other"])
+def team_requirements_for_case(case: dict) -> list[dict]:
+    return core_team_requirements_for_case(case, compute_dynamic_risk)
 
-    weather_points=WEATHER_MODIFIERS.get(weather,{}).get(category,0)
 
-    time_points,time_label=get_time_risk()
-
-    missing_points=hours_missing_risk(case.get("time_missing",0))
-
-    age_points, age_label=age_risk(case.get("age",0))
-
-    text=f"{case.get('location','')} {case.get('description','')}"
-
-    loc_hits, loc_points, loc_skills = _collect_rule_hits(text, LOCATION_RISK_RULES)
-
-    circumstance_hits, circumstance_points, circumstance_skills = _collect_rule_hits(text, CIRCUMSTANCE_RISK_RULES)
-
-    if case.get("location_source") != "map" and not (case.get("location") or "").strip():
-
-        loc_hits.append("unknown last location")
-
-        loc_points += 18
-
-    elif case.get("location_source") != "map" and len((case.get("location") or "").strip()) < 8:
-
-        loc_hits.append("vague last location")
-
-        loc_points += 12
-
-    if category=="Flood" and "water nearby" in loc_hits:
-
-        loc_points += 8
-
-        loc_hits.append("flood-water location match")
-
-    if category=="Wildfire" and ("remote terrain" in loc_hits or "fire fuel zone" in loc_hits):
-
-        loc_points += 10
-
-        loc_hits.append("wildfire fuel/terrain match")
-
-    if category=="Mountain / Forest" and "remote terrain" in loc_hits:
-
-        loc_points += 8
-
-        loc_hits.append("mountain/forest location match")
-
-    raw=base+weather_points+time_points+missing_points+age_points+loc_points+circumstance_points
-
-    score=clamp_score(raw,5,100)
-
-    label,_=get_priority(score)
-
-    spec=DISASTER_TEAMS.get(category, DISASTER_TEAMS["Other"])
-
-    required=[]
-
-    for skill in spec.get("required",[])+loc_skills+circumstance_skills+spec.get("preferred",[])[:1]:
-
-        if skill and skill not in required:
-
-            required.append(skill)
-
-    if not required:
-
-        required=["General Search"]
-
-    factors=[
-
-        f"{category} baseline +{base}",
-
-        f"{weather} weather {weather_points:+d}",
-
-        f"{case.get('time_missing',0)}h missing +{missing_points}",
-
-        f"age {case.get('age',0)} ({age_label}) +{age_points}",
-
-        f"{time_label} +{time_points}",
-
-    ]
-
-    factors.extend([f"location: {x}" for x in loc_hits])
-
-    factors.extend([f"circumstance: {x}" for x in circumstance_hits])
-
-    radius=1.0
-
-    if category in ["Mountain / Forest","Flood","Wildfire"]:
-
-        radius=2.5
-
-    radius += min(8.0, float(case.get("time_missing") or 0) * 0.18)
-
-    if "remote terrain" in loc_hits:
-
-        radius += 1.5
-
-    action = {
-
-        "CRITICAL": "Dispatch immediately, form a multi-skill team, and start high-priority field search.",
-
-        "HIGH": "Assign a team now and begin structured search from the last known location.",
-
-        "MEDIUM": "Open active search, verify last-seen details, and monitor escalation triggers.",
-
-        "LOW": "Log report, verify details, and keep volunteers on standby.",
-
-    }[label]
-
-    reasoning=(
-
-        f"Risk is {score}/100 ({label}) from {category.lower()} baseline, "
-
-        f"{weather.lower()} weather, {case.get('time_missing',0)} hours missing, "
-
-        f"age {case.get('age',0)} ({age_label}), and last-location hazards: {', '.join(loc_hits) if loc_hits else 'none detected'}."
-
-    )
-
-    return {
-
-        "priority_score": score,
-
-        "reasoning": reasoning,
-
-        "required_skills": required,
-
-        "risk_factors": factors,
-
-        "recommended_action": action,
-
-        "estimated_search_radius_km": round(radius,1),
-
-        "risk_breakdown": {
-
-            "base_points": base,
-
-            "weather": weather,
-
-            "weather_points": weather_points,
-
-            "time_of_day_label": time_label,
-
-            "time_of_day_points": time_points,
-
-            "hours_missing_points": missing_points,
-
-            "age_points": age_points,
-
-            "location_points": loc_points,
-
-            "circumstance_points": circumstance_points,
-
-            "raw_score": raw,
-
-        }
-
-    }
-
+def build_team_for_case(case, available_vols):
+    return core_build_team_for_case(case, available_vols, team_requirements_for_case, volunteer_team_score)
 
 
 def rescore_legacy_cases():
@@ -4027,261 +3436,29 @@ def rescore_legacy_cases():
 
 
 
-def compute_dynamic_risk(case):
-
-    weather_info=ensure_case_weather(case, persist=True)
-
-    weather=weather_info.get("category","Clear")
-
-    w_mod=WEATHER_MODIFIERS.get(weather,{}).get(case.get("category","Other"),0)
-
-    t_mod,t_label=get_time_risk()
-
-    breakdown=case.get("risk_breakdown") or {}
-
-    if breakdown:
-
-        total=(w_mod-int(breakdown.get("weather_points",0)))+(t_mod-int(breakdown.get("time_of_day_points",0)))
-
-    else:
-
-        total=w_mod+t_mod
-
-    effective=clamp_score(case["priority_score"]+total)
-
-    eff_label,eff_cls=get_priority(effective)
-
-    return {"weather":weather,"w_icon":WEATHER_ICONS.get(weather,""),"w_mod":w_mod,
-
-            "t_mod":t_mod,"total":total,"effective":effective,
-
-            "eff_label":eff_label,"eff_cls":eff_cls,"t_label":t_label}
 
 
 
                                                                                 
 
-DISASTER_TEAMS={
 
-    "Flood":            {"icon":"🌊","required":["Dive Rescue"],"preferred":["Paramedic / Medic","General Search"],"size":3,"note":"Dive team + medic + support"},
 
-    "Wildfire":         {"icon":"🔥","required":["Firefighter"],"preferred":["Paramedic / Medic","Mountain Rescue"],"size":4,"note":"Fire suppression + evacuation + medic"},
 
-    "Mountain / Forest":{"icon":"⛰️","required":["Mountain Rescue"],"preferred":["K9 Handler","Paramedic / Medic"],"size":3,"note":"Alpine specialists + K9"},
 
-    "Urban Area":       {"icon":"🏙️","required":["General Search"],"preferred":["Paramedic / Medic","K9 Handler"],"size":2,"note":"Search team + medic"},
 
-    "Missing Person":   {"icon":"🔍","required":["General Search"],"preferred":["K9 Handler","Paramedic / Medic"],"size":2,"note":"Search + K9 tracker"},
 
-    "Other":            {"icon":"🚨","required":[],"preferred":["General Search","Paramedic / Medic"],"size":2,"note":"General response team"},
 
-}
 
 
 
-SKILL_GROUPS = {
 
-    "Dive Rescue": ["Dive Rescue"],
 
-    "Firefighter": ["Firefighter"],
 
-    "Mountain Rescue": ["Mountain Rescue", "Forest / Wilderness"],
 
-    "Forest / Wilderness": ["Forest / Wilderness", "Mountain Rescue"],
 
-    "K9 Handler": ["K9 Handler"],
 
-    "Paramedic / Medic": ["Paramedic / Medic"],
 
-    "General Search": ["General Search", "Forest / Wilderness", "Mountain Rescue", "K9 Handler"],
 
-}
-
-
-
-def skill_match_level(vol_skill: str, desired_skills: list[str]) -> int:
-
-    """0 exact, 1 compatible, 2 weak/no match."""
-
-    if not desired_skills:
-
-        return 1
-
-    if vol_skill in desired_skills:
-
-        return 0
-
-    compatible = set()
-
-    for skill in desired_skills:
-
-        compatible.update(SKILL_GROUPS.get(skill, [skill]))
-
-    return 1 if vol_skill in compatible else 2
-
-
-
-def _unique_roles(roles: list[dict]) -> list[dict]:
-
-    seen = set()
-
-    result = []
-
-    for role in roles:
-
-        key = (role["label"], tuple(role.get("skills", [])))
-
-        if key not in seen:
-
-            seen.add(key)
-
-            result.append(role)
-
-    return result
-
-
-
-def team_requirements_for_case(case: dict) -> list[dict]:
-
-    """Build risk-aware role slots from incident type, AI skills, weather/time risk and vulnerability."""
-
-    spec = DISASTER_TEAMS.get(case.get("category", "Other"), DISASTER_TEAMS["Other"])
-
-    dr = compute_dynamic_risk(case)
-
-    effective = dr["effective"]
-
-    weather = dr["weather"]
-
-    age = int(case.get("age") or 0)
-
-    hours_missing = float(case.get("time_missing") or 0)
-
-
-
-    roles = []
-
-    for skill in spec["required"]:
-
-        roles.append({"label": skill, "skills": [skill], "priority": "required"})
-
-    for skill in case.get("required_skills", []):
-
-        if skill in SKILL_GROUPS:
-
-            roles.append({"label": skill, "skills": [skill], "priority": "ai"})
-
-    for skill in spec["preferred"]:
-
-        roles.append({"label": skill, "skills": [skill], "priority": "preferred"})
-
-
-
-    if effective >= 65 or age < 12 or age >= 60:
-
-        roles.append({"label": "Medical cover", "skills": ["Paramedic / Medic"], "priority": "risk"})
-
-    if effective >= 85 or dr["total"] >= 20:
-
-        roles.append({"label": "Search lead", "skills": ["General Search", "Mountain Rescue"], "priority": "risk"})
-
-    if case.get("category") == "Wildfire" or weather == "Extreme Heat":
-
-        roles.append({"label": "Fire suppression", "skills": ["Firefighter"], "priority": "risk"})
-
-        roles.append({"label": "Evacuation medic", "skills": ["Paramedic / Medic"], "priority": "risk"})
-
-    if case.get("category") == "Flood" or weather in ["Rain", "Storm"]:
-
-        roles.append({"label": "Water rescue", "skills": ["Dive Rescue"], "priority": "risk"})
-
-    if case.get("category") == "Mountain / Forest" or weather in ["Snow", "Fog"]:
-
-        roles.append({"label": "Terrain search", "skills": ["Mountain Rescue", "Forest / Wilderness"], "priority": "risk"})
-
-    if hours_missing >= 6:
-
-        roles.append({"label": "Tracker", "skills": ["K9 Handler", "General Search"], "priority": "risk"})
-
-
-
-    base_size = spec["size"]
-
-    if effective >= 85:
-
-        target_size = base_size + 1
-
-    elif effective >= 65 or dr["total"] >= 15:
-
-        target_size = base_size
-
-    else:
-
-        target_size = max(1, base_size - 1)
-
-    target_size = min(5, max(1, target_size))
-
-
-
-    roles = _unique_roles(roles)
-
-    while len(roles) < target_size:
-
-        roles.append({"label": "Support search", "skills": ["General Search", "Mountain Rescue", "Forest / Wilderness"], "priority": "support"})
-
-    return roles[:target_size]
-
-
-
-def volunteer_team_score(vol: dict, case: dict, role: dict) -> tuple:
-
-    distance = haversine(vol["lat"], vol["lon"], case["lat"], case["lon"])
-
-    match_level = skill_match_level(vol.get("skill", ""), role.get("skills", []))
-
-    online_penalty = 0 if vol.get("online_status") == "online" else 8
-
-    status_penalty = 0 if vol.get("status") == "active" else 100
-
-    priority_penalty = {"required": 0, "ai": 3, "risk": 5, "preferred": 8, "support": 12}.get(role.get("priority"), 10)
-
-    skill_penalty = [0, 15, 45][match_level]
-
-    return (status_penalty + online_penalty + priority_penalty + skill_penalty + distance * 4, match_level, distance)
-
-
-
-def build_team_for_case(case, available_vols):
-
-    """Select a risk-aware team. Returns list of (vol, role_tag)."""
-
-    roles = team_requirements_for_case(case)
-
-    assigned = []
-
-    remaining = [v for v in available_vols if v.get("status") == "active" and v.get("online_status") != "offline"]
-
-    for role in roles:
-
-        if not remaining:
-
-            break
-
-        best = min(remaining, key=lambda v: volunteer_team_score(v, case, role))
-
-        score = volunteer_team_score(best, case, role)
-
-        match_level, distance = score[1], score[2]
-
-        match_label = ["skill match", "compatible skill", "nearest cover"][match_level]
-
-        role_icon = {"required": "🔴", "ai": "🧠", "risk": "⚠️", "preferred": "🟡", "support": "🔵"}.get(role.get("priority"), "🔵")
-
-        assigned.append((best, f"{role_icon} {role['label']} · {distance:.1f}km · {match_label}"))
-
-        remaining = [v for v in remaining if v["id"] != best["id"]]
-
-    return assigned
 
 
 
@@ -4651,123 +3828,26 @@ def parse_json(raw):
 
 
 
-def avatar_initials(name):
 
-    p=name.split(); return (p[0][0]+(p[1][0] if len(p)>1 else "")).upper()
 
 
 
-def uploaded_image_to_data_url(uploaded_file):
 
-    """Convert Streamlit UploadedFile into an embeddable image string for cards."""
 
-    if uploaded_file is None:
 
-        return None
 
-    file_bytes = uploaded_file.getvalue()
 
-    mime = uploaded_file.type or "image/jpeg"
 
-    encoded = base64.b64encode(file_bytes).decode("utf-8")
 
-    return f"data:{mime};base64,{encoded}"
 
 
 
-CASE_CONTEXT_PHOTOS = {
 
-    "Flood": "https://picsum.photos/seed/findfirst-flood-water/320/320",
 
-    "Wildfire": "https://picsum.photos/seed/findfirst-wildfire-field/320/320",
 
-    "Mountain / Forest": "https://picsum.photos/seed/findfirst-mountain-forest/320/320",
 
-    "Urban Area": "https://picsum.photos/seed/findfirst-urban-search/320/320",
 
-    "Missing Person": "https://picsum.photos/seed/findfirst-search-path/320/320",
 
-    "Other": "https://picsum.photos/seed/findfirst-rescue-field/320/320",
-
-}
-
-
-
-COMMONS_FILE_BASE = "https://commons.wikimedia.org/wiki/Special:Redirect/file/"
-
-NAV_PHOTO_FILES = {
-
-    "dashboard": "Font Awesome 5 solid tachometer-alt.svg",
-
-    "my_missions": "Font Awesome 5 solid bullseye.svg",
-
-    "all_cases": "Font Awesome 5 solid folder-open.svg",
-
-    "teams": "Font Awesome 5 solid users.svg",
-
-    "volunteers": "Font Awesome 5 solid user-friends.svg",
-
-    "tracking": "Font Awesome 5 solid map-marker-alt.svg",
-
-    "ai_log": "Font Awesome 5 solid robot.svg",
-
-    "report_case": "Font Awesome 5 solid clipboard-list.svg",
-
-    "my_cases": "Font Awesome 5 solid folder-open.svg",
-
-}
-
-CASE_CONTEXT_ICONS = {
-
-    "Flood": "Font Awesome 5 solid tint.svg",
-
-    "Wildfire": "Font Awesome 5 solid fire.svg",
-
-    "Mountain / Forest": "Font Awesome 5 solid mountain.svg",
-
-    "Urban Area": "Font Awesome 5 solid city.svg",
-
-    "Missing Person": "Font Awesome 5 solid user.svg",
-
-    "Other": "Font Awesome 5 solid map-marked-alt.svg",
-
-}
-
-
-
-def commons_file_url(filename: str, width: int = 96) -> str:
-
-    return f"{COMMONS_FILE_BASE}{urllib.parse.quote(filename)}?width={width}"
-
-
-
-def nav_photo_url(page_id: str) -> str:
-
-    return commons_file_url(NAV_PHOTO_FILES.get(page_id, NAV_PHOTO_FILES["dashboard"]))
-
-
-
-def case_photo_html(case: dict) -> str:
-
-    uploaded = case.get("photo_data_url")
-
-    if uploaded:
-
-        return f'<img class="missing-photo" src="{uploaded}" alt="Missing person photo">'
-
-    category = case.get("category", "Other")
-
-    if IS_DARK:
-
-        icon = commons_file_url(CASE_CONTEXT_ICONS.get(category, CASE_CONTEXT_ICONS["Other"]), 96)
-
-        safe_label = category.replace("/", " / ")
-
-        return f'<div class="missing-photo missing-photo-fallback" aria-label="{safe_label}"><img src="{icon}" alt=""><span>{safe_label}</span></div>'
-
-    url = CASE_CONTEXT_PHOTOS.get(category, CASE_CONTEXT_PHOTOS["Other"])
-
-    return f'<img class="missing-photo missing-photo-context" src="{url}" alt="{category} context photo" loading="lazy">'
 
 
 
@@ -4779,67 +3859,12 @@ def case_photo_html(case: dict) -> str:
 
                                                                        
 
-ADDRESS_PRESETS = {
-
-    "independence square, kyiv": (50.4501, 30.5234),
-
-    "maidan nezalezhnosti, kyiv": (50.4501, 30.5234),
-
-    "olympic stadium, kyiv": (50.4334, 30.5219),
-
-    "podil river station, kyiv": (50.4721, 30.5226),
-
-    "kyiv central station": (50.4412, 30.4882),
-
-    "12 riverside st, springfield": (50.4600, 30.5300),
-
-    "north riverbank, km 4": (50.4685, 30.5155),
-
-    "south bridge, kyiv": (50.3948, 30.5975),
-
-    "hydropark, kyiv": (50.4457, 30.5763),
-
-    "bucharest old town": (44.4325, 26.1025),
-
-}
 
 
 
-DEFAULT_CENTER = (50.4501, 30.5234)
 
 
 
-def geocode_address(address: str, default=DEFAULT_CENTER):
-
-    """Offline demo geocoder: known demo addresses + deterministic fallback near the city center."""
-
-    raw = (address or "").strip()
-
-    key = raw.lower()
-
-    if not key:
-
-        return default
-
-    if key in ADDRESS_PRESETS:
-
-        return ADDRESS_PRESETS[key]
-
-    for known, coords in ADDRESS_PRESETS.items():
-
-        if known in key or key in known:
-
-            return coords
-
-                                                                                        
-
-    h = int(hashlib.sha256(key.encode("utf-8")).hexdigest()[:8], 16)
-
-    lat_offset = ((h % 2000) - 1000) / 100000                 
-
-    lon_offset = (((h // 2000) % 2000) - 1000) / 100000
-
-    return default[0] + lat_offset, default[1] + lon_offset
 
 
 
